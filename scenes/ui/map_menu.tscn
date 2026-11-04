@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://crg4ceg85appw" path="res://assets/images/map_menu/autumn.png" id="4_30xoy"]
 [ext_resource type="Texture2D" uid="uid://cbulxgfoha002" path="res://assets/images/map_menu/winter.png" id="5_p8jr8"]
 [ext_resource type="Texture2D" uid="uid://p1d6khh36651" path="res://assets/images/map_menu/spring.png" id="6_nt6vk"]
+[ext_resource type="Texture2D" uid="uid://x8f4woeulp44" path="res://assets/images/map_menu/lock.png" id="6_y16s6"]
 [ext_resource type="Texture2D" uid="uid://cljmtl0x3yjcw" path="res://assets/images/map_menu/back_button.png" id="7_84ith"]
 
 [node name="MapMenu" type="Control" unique_id=1808945184]
@@ -62,6 +63,16 @@ texture_normal = ExtResource("4_30xoy")
 ignore_texture_size = true
 stretch_mode = 0
 
+[node name="LockIcon" type="TextureRect" parent="AutumnIsland" unique_id=549771008]
+layout_mode = 0
+offset_left = 113.0
+offset_top = 96.0
+offset_right = 263.0
+offset_bottom = 246.0
+texture = ExtResource("6_y16s6")
+expand_mode = 1
+stretch_mode = 5
+
 [node name="WinterIsland" type="TextureButton" parent="." unique_id=903824695]
 custom_minimum_size = Vector2(100, 100)
 layout_mode = 0
@@ -73,6 +84,16 @@ texture_normal = ExtResource("5_p8jr8")
 ignore_texture_size = true
 stretch_mode = 0
 
+[node name="LockIcon" type="TextureRect" parent="WinterIsland" unique_id=1254113838]
+layout_mode = 0
+offset_left = 127.0
+offset_top = 79.0
+offset_right = 277.0
+offset_bottom = 229.0
+texture = ExtResource("6_y16s6")
+expand_mode = 1
+stretch_mode = 5
+
 [node name="SpringIsland" type="TextureButton" parent="." unique_id=875806044]
 custom_minimum_size = Vector2(100, 100)
 layout_mode = 0
@@ -83,6 +104,16 @@ offset_bottom = 704.0
 texture_normal = ExtResource("6_nt6vk")
 ignore_texture_size = true
 stretch_mode = 0
+
+[node name="LockIcon" type="TextureRect" parent="SpringIsland" unique_id=548079931]
+layout_mode = 0
+offset_left = 136.0
+offset_top = 117.0
+offset_right = 286.0
+offset_bottom = 267.0
+texture = ExtResource("6_y16s6")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="BackButton" type="TextureButton" parent="." unique_id=1909474968]
 layout_mode = 0
