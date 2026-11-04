@@ -1,0 +1,60 @@
+[gd_scene format=3 uid="uid://bpesed4vcdkto"]
+
+[ext_resource type="Script" uid="uid://bfpok8tph1h1o" path="res://scripts/main_menu.gd" id="1_x2yvf"]
+[ext_resource type="Texture2D" uid="uid://doh4jmiorydpt" path="res://assets/images/main_menu/background.png" id="2_uhagc"]
+[ext_resource type="Texture2D" uid="uid://b0av15sx2tcji" path="res://assets/images/main_menu/button_play.png" id="3_btxxm"]
+[ext_resource type="Texture2D" uid="uid://cblw5vt5gjtjp" path="res://assets/images/main_menu/button_hangar.png" id="4_wb0q5"]
+[ext_resource type="Texture2D" uid="uid://dbnlop233r5wc" path="res://assets/images/main_menu/button_settings.png" id="5_q85j6"]
+
+[node name="MainMenu" type="Control" unique_id=1724079435]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_x2yvf")
+
+[node name="BackgroundImage" type="TextureRect" parent="." unique_id=2118424667]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_uhagc")
+expand_mode = 1
+
+[node name="PlayButton" type="TextureButton" parent="." unique_id=1304825029]
+layout_mode = 0
+offset_left = 560.0
+offset_top = 651.0
+offset_right = 1048.0
+offset_bottom = 816.0
+texture_normal = ExtResource("3_btxxm")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="HangarButton" type="TextureButton" parent="." unique_id=661257135]
+custom_minimum_size = Vector2(340, 110)
+layout_mode = 0
+offset_left = 144.0
+offset_top = 675.0
+offset_right = 506.0
+offset_bottom = 799.0
+texture_normal = ExtResource("4_wb0q5")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="SettingsButton" type="TextureButton" parent="." unique_id=1856060472]
+custom_minimum_size = Vector2(340, 110)
+layout_mode = 0
+offset_left = 1111.0
+offset_top = 679.0
+offset_right = 1472.0
+offset_bottom = 803.0
+texture_normal = ExtResource("5_q85j6")
+ignore_texture_size = true
+stretch_mode = 0
+
+[connection signal="pressed" from="PlayButton" to="." method="_on_play_button_pressed"]

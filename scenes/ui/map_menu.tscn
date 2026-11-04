@@ -1,0 +1,98 @@
+[gd_scene format=3 uid="uid://1ug2wtysrypc"]
+
+[ext_resource type="Script" uid="uid://bj67q40s5hisn" path="res://scripts/map_menu.gd" id="1_qbryl"]
+[ext_resource type="Texture2D" uid="uid://besue2co45khu" path="res://assets/images/map_menu/title_maps.png" id="2_qbryl"]
+[ext_resource type="Texture2D" uid="uid://cqql34yka12t3" path="res://assets/images/map_menu/background.png" id="2_y16s6"]
+[ext_resource type="Texture2D" uid="uid://ck0vqvlmmlbbj" path="res://assets/images/map_menu/summer.png" id="3_y16s6"]
+[ext_resource type="Texture2D" uid="uid://crg4ceg85appw" path="res://assets/images/map_menu/autumn.png" id="4_30xoy"]
+[ext_resource type="Texture2D" uid="uid://cbulxgfoha002" path="res://assets/images/map_menu/winter.png" id="5_p8jr8"]
+[ext_resource type="Texture2D" uid="uid://p1d6khh36651" path="res://assets/images/map_menu/spring.png" id="6_nt6vk"]
+[ext_resource type="Texture2D" uid="uid://cljmtl0x3yjcw" path="res://assets/images/map_menu/back_button.png" id="7_84ith"]
+
+[node name="MapMenu" type="Control" unique_id=1808945184]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_qbryl")
+
+[node name="Background" type="TextureRect" parent="." unique_id=121071568]
+modulate = Color(0.9098039, 0.9098039, 0.9098039, 1)
+self_modulate = Color(1.1730844, 1.1730844, 1.1730844, 0.91764706)
+light_mask = 524305
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_y16s6")
+expand_mode = 1
+
+[node name="TitleImage" type="TextureRect" parent="." unique_id=610316457]
+layout_mode = 0
+offset_left = 629.0
+offset_top = 55.0
+offset_right = 1007.0
+offset_bottom = 172.0
+texture = ExtResource("2_qbryl")
+expand_mode = 1
+
+[node name="SummerIsland" type="TextureButton" parent="." unique_id=88542792]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 0
+offset_left = -20.0
+offset_top = 215.0
+offset_right = 440.0
+offset_bottom = 685.0
+texture_normal = ExtResource("3_y16s6")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="AutumnIsland" type="TextureButton" parent="." unique_id=2139510122]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 0
+offset_left = 418.0
+offset_top = 179.0
+offset_right = 778.0
+offset_bottom = 644.0
+texture_normal = ExtResource("4_30xoy")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="WinterIsland" type="TextureButton" parent="." unique_id=903824695]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 0
+offset_left = 801.0
+offset_top = 189.0
+offset_right = 1194.0
+offset_bottom = 642.0
+texture_normal = ExtResource("5_p8jr8")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="SpringIsland" type="TextureButton" parent="." unique_id=875806044]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 0
+offset_left = 1188.0
+offset_top = 215.0
+offset_right = 1571.0
+offset_bottom = 704.0
+texture_normal = ExtResource("6_nt6vk")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="BackButton" type="TextureButton" parent="." unique_id=1909474968]
+layout_mode = 0
+offset_left = 100.0
+offset_top = 48.0
+offset_right = 232.0
+offset_bottom = 165.0
+texture_normal = ExtResource("7_84ith")
+ignore_texture_size = true
+stretch_mode = 0
+
+[connection signal="pressed" from="SummerIsland" to="." method="_on_summer_island_pressed"]
+[connection signal="pressed" from="BackButton" to="." method="_on_back_button_pressed"]
