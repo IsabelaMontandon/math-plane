@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://6g83ecnofr01"]
+
+[ext_resource type="Texture2D" uid="uid://bx7nichrtrr2j" path="res://assets/images/gameplay/summer/balloon_yellow.png" id="1_j2smu"]
+[ext_resource type="Script" uid="uid://b8mfgq563o432" path="res://scripts/balloon.gd" id="1_y2gv5"]
+
+[node name="Balloon" type="Node2D" unique_id=1292196318]
+scale = Vector2(0.7, 0.7)
+script = ExtResource("1_y2gv5")
+
+[node name="BalloonSprite" type="Sprite2D" parent="." unique_id=1711296545]
+scale = Vector2(0.1, 0.1)
+texture = ExtResource("1_j2smu")
+
+[node name="OperationLabel" type="Label" parent="." unique_id=437998213]
+offset_left = -28.75
+offset_top = -40.0
+offset_right = 33.749992
+offset_bottom = 27.499992
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 45
+text = "+2"
