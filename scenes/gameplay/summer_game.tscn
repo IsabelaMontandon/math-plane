@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://btb0atx8f26dj" path="res://assets/images/gameplay/summer/cloud_2.png" id="4_5jwws"]
 [ext_resource type="Texture2D" uid="uid://ceg1838fvejs4" path="res://assets/images/gameplay/summer/cloud_3.png" id="5_em72e"]
 [ext_resource type="Texture2D" uid="uid://d3uvowhmm3hvg" path="res://assets/images/gameplay/summer/cloud_4.png" id="6_s35l5"]
+[ext_resource type="Texture2D" uid="uid://bv6k13berjcd1" path="res://assets/images/ui/goal_frame.png" id="8_em72e"]
 
 [node name="SummerGame" type="Node2D" unique_id=291905876]
 script = ExtResource("1_1bnwg")
@@ -21,7 +22,7 @@ texture = ExtResource("2_bnkoo")
 
 [node name="LandscapeB" type="Sprite2D" parent="Background" unique_id=611853619]
 z_index = -10
-position = Vector2(1631.0001, 456)
+position = Vector2(1629, 451)
 scale = Vector2(1.499, 1.243)
 texture = ExtResource("2_bnkoo")
 flip_h = true
@@ -60,64 +61,115 @@ scale = Vector2(0.18, 0.18)
 [node name="UI" type="CanvasLayer" parent="." unique_id=1150168572]
 
 [node name="ProgressPanel" type="Panel" parent="UI" unique_id=2081989975]
-offset_left = 20.0
-offset_top = 20.0
-offset_right = 190.0
-offset_bottom = 130.0
+offset_left = 49.0
+offset_top = 29.0
+offset_right = 219.0
+offset_bottom = 139.0
+
+[node name="ProgressBackground" type="TextureRect" parent="UI/ProgressPanel" unique_id=224183639]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -21.0
+offset_top = -16.0
+offset_right = 28.0
+offset_bottom = 24.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_em72e")
+expand_mode = 1
 
 [node name="ProgressLabel" type="Label" parent="UI/ProgressPanel" unique_id=1372859686]
 layout_mode = 0
-offset_left = 33.0
-offset_top = 21.0
-offset_right = 138.0
-offset_bottom = 90.0
+offset_left = 37.0
+offset_top = 20.0
+offset_right = 142.0
+offset_bottom = 89.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 50
 text = "1/10"
 
 [node name="CurrentPanel" type="Panel" parent="UI" unique_id=471165526]
-offset_left = 1200.0
-offset_top = 20.0
-offset_right = 1370.0
-offset_bottom = 130.0
+offset_left = 1127.0
+offset_top = 22.0
+offset_right = 1297.0
+offset_bottom = 132.0
+
+[node name="CurrentBackground" type="TextureRect" parent="UI/CurrentPanel" unique_id=1713004897]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -24.0
+offset_top = -15.0
+offset_right = 25.0
+offset_bottom = 25.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_em72e")
+expand_mode = 1
 
 [node name="CurrentTitle" type="Label" parent="UI/CurrentPanel" unique_id=1094533712]
 layout_mode = 0
-offset_left = 37.0
-offset_top = 5.0
-offset_right = 139.0
-offset_bottom = 50.0
+offset_left = 7.0
+offset_top = 11.0
+offset_right = 165.0
+offset_bottom = 57.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 28
 text = "ATUAL"
+horizontal_alignment = 1
 
 [node name="CurrentValue" type="Label" parent="UI/CurrentPanel" unique_id=1820012708]
 layout_mode = 0
-offset_left = 71.0
-offset_top = 34.0
-offset_right = 97.0
-offset_bottom = 97.0
+offset_left = 4.0
+offset_top = 44.0
+offset_right = 166.0
+offset_bottom = 108.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 45
 text = "0"
+horizontal_alignment = 1
 
 [node name="GoalPanel" type="Panel" parent="UI" unique_id=1643666148]
-offset_left = 1400.0
-offset_top = 20.0
-offset_right = 1570.0
-offset_bottom = 130.0
+offset_left = 1368.0
+offset_top = 27.0
+offset_right = 1538.0
+offset_bottom = 137.0
+
+[node name="GoalBackground" type="TextureRect" parent="UI/GoalPanel" unique_id=316776649]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -23.0
+offset_top = -16.0
+offset_right = 26.0
+offset_bottom = 24.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_em72e")
+expand_mode = 1
 
 [node name="GoalTitle" type="Label" parent="UI/GoalPanel" unique_id=829210743]
 layout_mode = 0
-offset_left = 42.0
-offset_top = 6.0
-offset_right = 122.0
-offset_bottom = 46.0
+offset_left = 6.0
+offset_top = 8.0
+offset_right = 165.0
+offset_bottom = 48.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 28
 text = "META"
+horizontal_alignment = 1
 
 [node name="GoalValue" type="Label" parent="UI/GoalPanel" unique_id=1984893409]
 layout_mode = 0
-offset_left = 68.0
-offset_top = 40.0
-offset_right = 94.0
-offset_bottom = 103.0
+offset_left = 8.0
+offset_top = 34.0
+offset_right = 167.0
+offset_bottom = 107.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 45
 text = "0"
+horizontal_alignment = 1
