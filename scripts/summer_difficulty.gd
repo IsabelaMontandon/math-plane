@@ -48,3 +48,8 @@ func _on_button_exit(button: TextureButton) -> void:
 
 func _on_back_button_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/ui/map_menu.tscn")
+
+func _on_explorer_play_button_pressed() -> void:
+	get_tree().change_scene_to_file(
+		"res://scenes/gameplay/explorer.tscn"
+	)
