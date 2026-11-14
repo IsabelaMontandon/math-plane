@@ -2,6 +2,13 @@ extends Node2D
 
 
 # =========================================================
+# CORAÇÃO VAZIO
+# =========================================================
+
+@export var heart_empty_texture: Texture2D
+
+
+# =========================================================
 # NÓS
 # =========================================================
 
@@ -20,12 +27,20 @@ extends Node2D
 @onready var goal_title = $UI/GoalPanel/GoalTitle
 @onready var goal_value_label = $UI/GoalPanel/GoalValue
 
+@onready var heart1 = $UI/LivesContainer/Heart1
+@onready var heart2 = $UI/LivesContainer/Heart2
+@onready var heart3 = $UI/LivesContainer/Heart3
 
-var balloon_scene = preload("res://scenes/gameplay/balloon.tscn")
+
+var balloon_scene = preload(
+	"res://scenes/gameplay/balloon.tscn"
+)
+
+var heart_full_texture: Texture2D
 
 
 # =========================================================
-# CORES DOS TEXTOS
+# CORES
 # =========================================================
 
 const TEXT_NORMAL = Color("#1E1E1E")
@@ -33,11 +48,41 @@ const TEXT_NORMAL = Color("#1E1E1E")
 # Soma normal
 const CURRENT_HIGHLIGHT = Color("#2E9E5B")
 
-# Passou da meta
+# Erro
 const ERROR_COLOR = Color("#E53935")
 
-# Nova meta
+# Meta
 const GOAL_COLOR = Color("#2684D9")
+
+
+# =========================================================
+# VERÃO / SOMA / EXPLORADOR
+# =========================================================
+
+const SUM_TARGETS = [
+	6,
+	9,
+	12,
+	15,
+	11,
+	18,
+	14,
+	20,
+	17,
+	24
+]
+
+const TOTAL_STEPS = 10
+const MAX_LIVES = 3
+
+
+# =========================================================
+# ESTRELAS
+# =========================================================
+
+const STAR_3_LIMIT = 60.0
+const STAR_2_LIMIT = 120.0
+const STAR_1_LIMIT = 210.0
 
 
 # =========================================================
@@ -46,12 +91,14 @@ const GOAL_COLOR = Color("#2684D9")
 
 const BACKGROUND_MOVE_DISTANCE = 220.0
 const CLOUD_MOVE_DISTANCE = 70.0
+
 const MOVE_TIME = 0.45
+
 const SCREEN_WIDTH = 1600.0
 
 
 # =========================================================
-# POSIÇÕES DAS 4 LINHAS
+# LINHAS
 # =========================================================
 
 const ROW_POSITIONS = [
@@ -63,24 +110,22 @@ const ROW_POSITIONS = [
 
 
 # =========================================================
-# POSIÇÕES DAS 4 COLUNAS
+# COLUNAS
 # =========================================================
 
 const COLUMN_POSITIONS = [
-	700.0,
-	920.0,
-	1140.0,
-	1360.0
+	680.0,
+	900.0,
+	1120.0,
+	1340.0
 ]
 
 const COLUMN_DISTANCE = 220.0
 
 
 # =========================================================
-# FASE
+# ESTADO
 # =========================================================
-
-const TOTAL_STEPS = 10
 
 var current_step: int = 1
 var current_value: int = 0
@@ -88,13 +133,21 @@ var goal_value: int = 0
 
 var current_row: int = 2
 
+var lives: int = MAX_LIVES
+
+var elapsed_time: float = 0.0
+var final_stars: int = 0
+
+var phase_completed: bool = false
+
 var is_moving: bool = false
 var is_plane_moving: bool = false
-var phase_completed: bool = false
 
 var background_width: float
 
 var columns: Array[Node2D] = []
+
+var column_serial: int = 0
 
 
 # =========================================================
@@ -102,6 +155,31 @@ var columns: Array[Node2D] = []
 # =========================================================
 
 func _ready() -> void:
+
+	heart_full_texture = heart1.texture
+
+
+	if heart_empty_texture == null:
+		push_warning(
+			"Defina Heart Empty Texture no nó Explorer."
+		)
+
+
+	# -----------------------------------------------------
+	# ESTADO INICIAL
+	# -----------------------------------------------------
+
+	current_step = 1
+	current_value = 0
+	goal_value = SUM_TARGETS[0]
+
+	lives = MAX_LIVES
+
+	elapsed_time = 0.0
+	final_stars = 0
+
+	phase_completed = false
+
 
 	# -----------------------------------------------------
 	# FUNDO
@@ -112,17 +190,43 @@ func _ready() -> void:
 		* abs(landscape_a.scale.x)
 	)
 
-	landscape_a.position.x = background_width / 2.0
 
-	landscape_b.position.x = background_width * 1.5
-	landscape_b.position.y = landscape_a.position.y
+	landscape_a.position.x = (
+		background_width / 2.0
+	)
+
+
+	landscape_b.position.x = (
+		background_width * 1.5
+	)
+
+
+	landscape_b.position.y = (
+		landscape_a.position.y
+	)
 
 
 	# -----------------------------------------------------
 	# AVIÃO
 	# -----------------------------------------------------
 
-	plane.position.y = ROW_POSITIONS[current_row]
+	plane.position.y = (
+		ROW_POSITIONS[current_row]
+	)
+
+
+	# -----------------------------------------------------
+	# INTERFACE
+	# -----------------------------------------------------
+
+	setup_ui_alignment()
+
+	reset_ui_colors()
+
+	update_progress_ui()
+	update_current_ui()
+	update_goal_ui()
+	update_lives_ui()
 
 
 	# -----------------------------------------------------
@@ -133,103 +237,56 @@ func _ready() -> void:
 
 
 	# -----------------------------------------------------
-	# INTERFACE
+	# PRIMEIRA META EM DESTAQUE
 	# -----------------------------------------------------
 
-	setup_ui_alignment()
-
-	current_step = 1
-	current_value = 0
-
-	goal_value = generate_new_goal(-1)
-
-	progress_label.text = (
-		str(current_step)
-		+ "/"
-		+ str(TOTAL_STEPS)
+	call_deferred(
+		"animate_goal_intro"
 	)
-
-	current_value_label.text = "0"
-	goal_value_label.text = str(goal_value)
-
-	reset_ui_colors()
 
 
 # =========================================================
-# CENTRALIZAÇÃO AUTOMÁTICA
+# TEMPO
+# =========================================================
+
+func _process(delta: float) -> void:
+
+	if phase_completed:
+		return
+
+
+	if get_tree().paused:
+		return
+
+
+	elapsed_time += delta
+
+
+# =========================================================
+# CENTRALIZAÇÃO
 # =========================================================
 
 func setup_ui_alignment() -> void:
-
-	# -----------------------------------------------------
-	# PROGRESSO
-	# -----------------------------------------------------
-
-	progress_label.anchor_left = 0.0
-	progress_label.anchor_right = 1.0
-
-	progress_label.offset_left = 0.0
-	progress_label.offset_right = 0.0
 
 	progress_label.horizontal_alignment = (
 		HORIZONTAL_ALIGNMENT_CENTER
 	)
 
 
-	# -----------------------------------------------------
-	# TÍTULO ATUAL
-	# -----------------------------------------------------
-
-	current_title.anchor_left = 0.0
-	current_title.anchor_right = 1.0
-
-	current_title.offset_left = 0.0
-	current_title.offset_right = 0.0
-
 	current_title.horizontal_alignment = (
 		HORIZONTAL_ALIGNMENT_CENTER
 	)
 
-
-	# -----------------------------------------------------
-	# NÚMERO ATUAL
-	# -----------------------------------------------------
-
-	current_value_label.anchor_left = 0.0
-	current_value_label.anchor_right = 1.0
-
-	current_value_label.offset_left = 0.0
-	current_value_label.offset_right = 0.0
 
 	current_value_label.horizontal_alignment = (
 		HORIZONTAL_ALIGNMENT_CENTER
 	)
 
 
-	# -----------------------------------------------------
-	# TÍTULO META
-	# -----------------------------------------------------
-
-	goal_title.anchor_left = 0.0
-	goal_title.anchor_right = 1.0
-
-	goal_title.offset_left = 0.0
-	goal_title.offset_right = 0.0
-
 	goal_title.horizontal_alignment = (
 		HORIZONTAL_ALIGNMENT_CENTER
 	)
 
-
-	# -----------------------------------------------------
-	# NÚMERO META
-	# -----------------------------------------------------
-
-	goal_value_label.anchor_left = 0.0
-	goal_value_label.anchor_right = 1.0
-
-	goal_value_label.offset_left = 0.0
-	goal_value_label.offset_right = 0.0
 
 	goal_value_label.horizontal_alignment = (
 		HORIZONTAL_ALIGNMENT_CENTER
@@ -247,20 +304,24 @@ func reset_ui_colors() -> void:
 		TEXT_NORMAL
 	)
 
+
 	current_value_label.add_theme_color_override(
 		"font_color",
 		TEXT_NORMAL
 	)
+
 
 	goal_title.add_theme_color_override(
 		"font_color",
 		TEXT_NORMAL
 	)
 
+
 	goal_value_label.add_theme_color_override(
 		"font_color",
 		TEXT_NORMAL
 	)
+
 
 	progress_label.add_theme_color_override(
 		"font_color",
@@ -269,19 +330,185 @@ func reset_ui_colors() -> void:
 
 
 # =========================================================
+# INTERFACE
+# =========================================================
+
+func update_progress_ui() -> void:
+
+	progress_label.text = (
+		str(current_step)
+		+ "/"
+		+ str(TOTAL_STEPS)
+	)
+
+
+func update_current_ui() -> void:
+
+	current_value_label.text = (
+		str(current_value)
+	)
+
+
+func update_goal_ui() -> void:
+
+	goal_value_label.text = (
+		str(goal_value)
+	)
+
+
+# =========================================================
+# VIDAS
+# =========================================================
+
+func update_lives_ui() -> void:
+
+	set_heart_state(
+		heart1,
+		lives >= 1
+	)
+
+
+	set_heart_state(
+		heart2,
+		lives >= 2
+	)
+
+
+	set_heart_state(
+		heart3,
+		lives >= 3
+	)
+
+
+func set_heart_state(
+	heart: TextureRect,
+	is_full: bool
+) -> void:
+
+	if is_full:
+
+		heart.texture = heart_full_texture
+
+		heart.modulate = Color.WHITE
+
+
+	else:
+
+		if heart_empty_texture != null:
+
+			heart.texture = heart_empty_texture
+
+			heart.modulate = Color.WHITE
+
+
+		else:
+
+			heart.texture = heart_full_texture
+
+			heart.modulate = Color(
+				0.35,
+				0.35,
+				0.35,
+				0.45
+			)
+
+
+# =========================================================
+# ANIMAÇÃO DO CORAÇÃO PERDIDO
+# =========================================================
+
+func animate_lost_heart(
+	heart: TextureRect
+) -> void:
+
+	heart.pivot_offset = (
+		heart.size / 2.0
+	)
+
+
+	heart.scale = Vector2.ONE
+
+
+	var tween = create_tween()
+
+
+	tween.set_trans(
+		Tween.TRANS_BACK
+	)
+
+
+	tween.set_ease(
+		Tween.EASE_OUT
+	)
+
+
+	tween.tween_property(
+		heart,
+		"scale",
+		Vector2(1.30, 1.30),
+		0.08
+	)
+
+
+	tween.tween_property(
+		heart,
+		"scale",
+		Vector2(0.75, 0.75),
+		0.08
+	)
+
+
+	await tween.finished
+
+
+	update_lives_ui()
+
+
+	heart.scale = Vector2.ONE
+
+
+# =========================================================
+# CORAÇÃO PERDIDO
+# =========================================================
+
+func get_lost_heart(
+	previous_lives: int
+) -> TextureRect:
+
+	if previous_lives == 3:
+		return heart3
+
+
+	if previous_lives == 2:
+		return heart2
+
+
+	return heart1
+
+
+# =========================================================
 # CONTROLES
 # =========================================================
 
-func _unhandled_input(event: InputEvent) -> void:
+func _unhandled_input(
+	event: InputEvent
+) -> void:
 
 	if phase_completed:
 		return
 
+
 	if not event is InputEventKey:
 		return
 
-	if not event.pressed or event.echo:
+
+	if not event.pressed:
 		return
+
+
+	if event.echo:
+		return
+
 
 	if is_moving:
 		return
@@ -303,7 +530,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 # =========================================================
-# MOVIMENTO DO AVIÃO
+# MOVIMENTO VERTICAL
 # =========================================================
 
 func move_plane_up() -> void:
@@ -311,10 +538,13 @@ func move_plane_up() -> void:
 	if is_plane_moving:
 		return
 
+
 	if current_row <= 0:
 		return
 
+
 	current_row -= 1
+
 
 	move_plane_to_current_row()
 
@@ -324,10 +554,16 @@ func move_plane_down() -> void:
 	if is_plane_moving:
 		return
 
-	if current_row >= ROW_POSITIONS.size() - 1:
+
+	if current_row >= (
+		ROW_POSITIONS.size() - 1
+	):
+
 		return
 
+
 	current_row += 1
+
 
 	move_plane_to_current_row()
 
@@ -336,10 +572,19 @@ func move_plane_to_current_row() -> void:
 
 	is_plane_moving = true
 
+
 	var tween = create_tween()
 
-	tween.set_trans(Tween.TRANS_QUAD)
-	tween.set_ease(Tween.EASE_OUT)
+
+	tween.set_trans(
+		Tween.TRANS_QUAD
+	)
+
+
+	tween.set_ease(
+		Tween.EASE_OUT
+	)
+
 
 	tween.tween_property(
 		plane,
@@ -348,27 +593,66 @@ func move_plane_to_current_row() -> void:
 		0.20
 	)
 
+
 	await tween.finished
+
 
 	is_plane_moving = false
 
 
 # =========================================================
-# CRIAÇÃO DAS COLUNAS
+# OPÇÕES VÁLIDAS
+# =========================================================
+
+func get_valid_sum_options() -> Array[int]:
+
+	var valid: Array[int] = []
+
+
+	var remaining = (
+		goal_value
+		- current_value
+	)
+
+
+	for number in range(1, 10):
+
+		if number <= remaining:
+
+			valid.append(
+				number
+			)
+
+
+	return valid
+
+
+# =========================================================
+# CRIA AS COLUNAS INICIAIS
 # =========================================================
 
 func create_initial_columns() -> void:
 
 	columns.clear()
 
+
 	for x_position in COLUMN_POSITIONS:
 
-		var column = create_balloon_column(
-			x_position
+		var column = (
+			create_balloon_column(
+				x_position
+			)
 		)
 
-		columns.append(column)
 
+		columns.append(
+			column
+		)
+
+
+# =========================================================
+# CRIA UMA COLUNA
+# =========================================================
 
 func create_balloon_column(
 	x_position: float
@@ -376,25 +660,62 @@ func create_balloon_column(
 
 	var column = Node2D.new()
 
-	column.name = "BalloonColumn"
 
-	balloon_rows.add_child(column)
+	column.name = (
+		"BalloonColumn"
+	)
 
-	column.position.x = x_position
+
+	balloon_rows.add_child(
+		column
+	)
 
 
-	# Uma das quatro linhas terá balão sem número
-	var blank_row = randi_range(0, 3)
+	column.position.x = (
+		x_position
+	)
+
+
+	var id = column_serial
+
+
+	column_serial += 1
+
+
+	var empty_row = (
+		id % 4
+	)
+
+
+	var good_row = (
+		(id + 2) % 4
+	)
+
+
+	var valid = (
+		get_valid_sum_options()
+	)
 
 
 	for row in range(4):
 
-		var balloon = balloon_scene.instantiate()
+		var balloon = (
+			balloon_scene.instantiate()
+		)
 
-		column.add_child(balloon)
+
+		column.add_child(
+			balloon
+		)
+
 
 		balloon.position.x = 0
-		balloon.position.y = ROW_POSITIONS[row]
+
+
+		balloon.position.y = (
+			ROW_POSITIONS[row]
+		)
+
 
 		balloon.set_meta(
 			"row_index",
@@ -402,20 +723,67 @@ func create_balloon_column(
 		)
 
 
-		if row == blank_row:
+		# ---------------------------------------------
+		# BALÃO VAZIO
+		# ---------------------------------------------
+
+		if row == empty_row:
 
 			balloon.set_blank()
 
 
+		# ---------------------------------------------
+		# CAMINHO POSSÍVEL
+		# ---------------------------------------------
+
+		elif row == good_row:
+
+			var value = 1
+
+
+			if not valid.is_empty():
+
+				value = (
+					valid[
+						id % valid.size()
+					]
+				)
+
+
+			balloon.set_operation(
+				value
+			)
+
+
+		# ---------------------------------------------
+		# OUTRAS OPÇÕES
+		# ---------------------------------------------
+
 		else:
 
-			var value = randi_range(1, 9)
+			var value = (
+				1
+				+ (
+					(
+						id * 3
+						+ row * 2
+					)
+					% 9
+				)
+			)
 
-			balloon.set_operation(value)
+
+			balloon.set_operation(
+				value
+			)
 
 
 	return column
 
+
+# =========================================================
+# ENCONTRA BALÃO DA LINHA
+# =========================================================
 
 func get_balloon_in_row(
 	column: Node2D,
@@ -424,7 +792,9 @@ func get_balloon_in_row(
 
 	for balloon in column.get_children():
 
-		if balloon.get_meta("row_index") == row:
+		if balloon.get_meta(
+			"row_index"
+		) == row:
 
 			return balloon
 
@@ -434,12 +804,28 @@ func get_balloon_in_row(
 
 # =========================================================
 # AVANÇAR
+#
+# IMPORTANTE:
+#
+# O movimento dos balões é SEMPRE o mesmo.
+#
+# - soma normal
+# - bate meta
+# - perde vida
+# - balão vazio
+#
+# Nenhum desses casos recria as quatro colunas.
 # =========================================================
 
 func move_forward() -> void:
 
-	if is_moving or is_plane_moving:
+	if is_moving:
 		return
+
+
+	if is_plane_moving:
+		return
+
 
 	if columns.is_empty():
 		return
@@ -451,26 +837,37 @@ func move_forward() -> void:
 	var first_column = columns[0]
 
 
-	var selected_balloon = get_balloon_in_row(
-		first_column,
-		current_row
+	var selected_balloon = (
+		get_balloon_in_row(
+			first_column,
+			current_row
+		)
 	)
 
 
-	var original_plane_x = plane.position.x
+	var original_plane_x = (
+		plane.position.x
+	)
 
 
 	# =====================================================
-	# MOVIMENTO DO CENÁRIO
+	# MOVIMENTO NORMAL DO MUNDO
 	# =====================================================
 
 	var tween = create_tween()
 
-	tween.set_trans(Tween.TRANS_QUAD)
-	tween.set_ease(Tween.EASE_IN_OUT)
+
+	tween.set_trans(
+		Tween.TRANS_QUAD
+	)
 
 
-	# Fundo A
+	tween.set_ease(
+		Tween.EASE_IN_OUT
+	)
+
+
+	# Fundo
 
 	tween.parallel().tween_property(
 		landscape_a,
@@ -480,8 +877,6 @@ func move_forward() -> void:
 		MOVE_TIME
 	)
 
-
-	# Fundo B
 
 	tween.parallel().tween_property(
 		landscape_b,
@@ -503,7 +898,7 @@ func move_forward() -> void:
 	)
 
 
-	# Balões
+	# Todas as colunas
 
 	for column in columns:
 
@@ -516,7 +911,7 @@ func move_forward() -> void:
 		)
 
 
-	# Pequeno impulso do avião
+	# Avião
 
 	tween.parallel().tween_property(
 		plane,
@@ -530,7 +925,7 @@ func move_forward() -> void:
 
 
 	# =====================================================
-	# BALÃO ESCOLHIDO
+	# RESULTADO DO BALÃO
 	# =====================================================
 
 	if selected_balloon != null:
@@ -542,16 +937,13 @@ func move_forward() -> void:
 
 		if selected_balloon.get_is_blank():
 
-			print("Balão sem número")
-
-			print(
-				"Atual continua = ",
-				current_value
+			await pop_balloon(
+				selected_balloon
 			)
 
 
 		# -------------------------------------------------
-		# BALÃO COM NÚMERO
+		# BALÃO COM OPERAÇÃO
 		# -------------------------------------------------
 
 		else:
@@ -560,95 +952,152 @@ func move_forward() -> void:
 				selected_balloon.get_operation()
 			)
 
+
 			var new_value = (
-				current_value + value
+				current_value
+				+ value
 			)
 
 
-			# ---------------------------------------------
+			# =============================================
 			# PASSOU DA META
-			# ---------------------------------------------
+			# =============================================
 
 			if new_value > goal_value:
 
-				# Não mostra o valor ultrapassado.
-				# Vai direto para 0 vermelho.
+				# Explosão normal.
 
-				await handle_overshoot()
+				await pop_balloon(
+					selected_balloon
+				)
 
 
-			# ---------------------------------------------
-			# ATINGIU A META
-			# ---------------------------------------------
+				# Perde vida.
+				#
+				# NÃO aguardamos coração ou zero.
+				# O movimento continua normalmente.
+
+				handle_wrong_operation()
+
+
+			# =============================================
+			# BATEU A META
+			# =============================================
 
 			elif new_value == goal_value:
 
-				current_value = new_value
+				# Não mostra o valor final.
+				#
+				# ATUAL vai direto para zero.
 
-				# Mostra o resultado correto,
-				# mas sem animação amarela.
+				current_value = 0
+
 
 				current_value_label.text = (
-					str(current_value)
+					"0"
 				)
 
-				await handle_goal_reached()
+
+				current_value_label.scale = (
+					Vector2.ONE
+				)
 
 
-			# ---------------------------------------------
+				current_value_label.add_theme_color_override(
+					"font_color",
+					TEXT_NORMAL
+				)
+
+
+				# Nova meta imediatamente.
+
+				advance_to_next_goal()
+
+
+				# POP normal.
+
+				await pop_balloon(
+					selected_balloon
+				)
+
+
+			# =============================================
 			# SOMA NORMAL
-			# ---------------------------------------------
+			# =============================================
 
 			else:
 
-				current_value = new_value
+				current_value = (
+					new_value
+				)
+
 
 				animate_current_value(
 					current_value
 				)
 
 
-			print(
-				"Atual = ",
-				current_value
-			)
+				await pop_balloon(
+					selected_balloon
+				)
 
 
-		# POP DO BALÃO
+	# =====================================================
+	# AVIÃO VOLTA
+	#
+	# SEMPRE acontece do mesmo jeito.
+	# =====================================================
 
-		await pop_balloon(
-			selected_balloon
-		)
+	var return_tween = create_tween()
+
+
+	return_tween.set_trans(
+		Tween.TRANS_QUAD
+	)
+
+
+	return_tween.set_ease(
+		Tween.EASE_OUT
+	)
+
+
+	return_tween.tween_property(
+		plane,
+		"position:x",
+		original_plane_x,
+		0.16
+	)
+
+
+	await return_tween.finished
 
 
 	# =====================================================
 	# PRIMEIRA COLUNA SAI
+	#
+	# Também SEMPRE acontece.
+	#
+	# Inclusive quando perdeu uma vida.
 	# =====================================================
 
 	var exit_tween = create_tween()
 
+
 	exit_tween.set_trans(
 		Tween.TRANS_QUAD
 	)
+
 
 	exit_tween.set_ease(
 		Tween.EASE_IN
 	)
 
 
-	exit_tween.parallel().tween_property(
+	exit_tween.tween_property(
 		first_column,
 		"position:x",
 		-200.0,
-		0.25
-	)
-
-
-	exit_tween.parallel().tween_property(
-		plane,
-		"position:x",
-		original_plane_x,
-		0.20
+		0.18
 	)
 
 
@@ -659,27 +1108,53 @@ func move_forward() -> void:
 		first_column
 	)
 
+
 	first_column.queue_free()
 
 
 	# =====================================================
-	# NOVA QUARTA COLUNA
+	# FIM DA FASE OU SEM VIDAS
 	# =====================================================
 
-	if not phase_completed:
+	if phase_completed:
 
-		var new_column = (
-			create_balloon_column(
-				COLUMN_POSITIONS[3]
-			)
-		)
+		reposition_backgrounds()
 
-		columns.append(
-			new_column
+		reposition_clouds()
+
+
+		is_moving = false
+
+
+		return
+
+
+	# =====================================================
+	# NOVA QUARTA COLUNA
+	#
+	# As três anteriores continuam intactas.
+	#
+	# Isso acontece tanto em:
+	#
+	# - jogada normal
+	# - meta batida
+	# - vida perdida
+	# =====================================================
+
+	var new_column = (
+		create_balloon_column(
+			COLUMN_POSITIONS[3]
 		)
+	)
+
+
+	columns.append(
+		new_column
+	)
 
 
 	reposition_backgrounds()
+
 	reposition_clouds()
 
 
@@ -687,24 +1162,21 @@ func move_forward() -> void:
 
 
 # =========================================================
-# SOMA NORMAL DO ATUAL
+# SOMA NORMAL
 # =========================================================
 
 func animate_current_value(
 	new_value: int
 ) -> void:
 
-	# Número muda imediatamente
-
 	current_value_label.text = (
 		str(new_value)
 	)
 
 
-	# Pivot no centro do Label inteiro
-
 	current_value_label.pivot_offset = (
-		current_value_label.size / 2.0
+		current_value_label.size
+		/ 2.0
 	)
 
 
@@ -712,8 +1184,6 @@ func animate_current_value(
 		Vector2.ONE
 	)
 
-
-	# Número fica amarelo
 
 	current_value_label.add_theme_color_override(
 		"font_color",
@@ -723,80 +1193,95 @@ func animate_current_value(
 
 	var tween = create_tween()
 
+
 	tween.set_trans(
 		Tween.TRANS_BACK
 	)
+
 
 	tween.set_ease(
 		Tween.EASE_OUT
 	)
 
 
-	# Cresce
-
 	tween.tween_property(
 		current_value_label,
 		"scale",
 		Vector2(1.35, 1.35),
-		0.09
+		0.08
 	)
 
 
 	tween.tween_interval(
-		0.06
+		0.04
 	)
 
-
-	# Volta
 
 	tween.tween_property(
 		current_value_label,
 		"scale",
 		Vector2.ONE,
-		0.11
+		0.09
 	)
 
 
-	await tween.finished
+	tween.finished.connect(
+		func():
 
-
-	# Volta para preto
-
-	current_value_label.add_theme_color_override(
-		"font_color",
-		TEXT_NORMAL
+			current_value_label.add_theme_color_override(
+				"font_color",
+				TEXT_NORMAL
+			)
 	)
 
 
 # =========================================================
-# PASSOU DA META
+# PERDA DE VIDA
+#
+# IMPORTANTE:
+#
+# Não há await aqui.
+#
+# Coração e ATUAL animam enquanto
+# os balões continuam normalmente.
 # =========================================================
 
-func handle_overshoot() -> void:
+func handle_wrong_operation() -> void:
 
-	# Exemplo:
-	#
-	# Atual = 38
-	# Meta = 40
-	# Pegou +5
-	#
-	# NÃO mostra 43.
-	#
-	# Vai direto para:
-	#
-	# Atual = 0
-	#
-	# e o 0 fica vermelho.
+	var previous_lives = (
+		lives
+	)
 
+
+	var lost_heart = (
+		get_lost_heart(
+			previous_lives
+		)
+	)
+
+
+	# =====================================================
+	# PERDE VIDA
+	# =====================================================
+
+	lives -= 1
+
+
+	# =====================================================
+	# ATUAL DIRETO PARA ZERO
+	# =====================================================
 
 	current_value = 0
 
 
-	current_value_label.text = "0"
+	current_value_label.text = (
+		"0"
+	)
 
 
 	current_value_label.pivot_offset = (
-		current_value_label.size / 2.0
+		current_value_label.size
+		/ 2.0
 	)
 
 
@@ -804,8 +1289,6 @@ func handle_overshoot() -> void:
 		Vector2.ONE
 	)
 
-
-	# Zero vermelho
 
 	current_value_label.add_theme_color_override(
 		"font_color",
@@ -813,109 +1296,203 @@ func handle_overshoot() -> void:
 	)
 
 
-	var tween = create_tween()
+	# =====================================================
+	# ANIMAÇÃO DO ZERO
+	#
+	# Não bloqueia o jogo.
+	# =====================================================
 
-	tween.set_trans(
+	var zero_tween = create_tween()
+
+
+	zero_tween.set_trans(
 		Tween.TRANS_BACK
 	)
 
-	tween.set_ease(
+
+	zero_tween.set_ease(
 		Tween.EASE_OUT
 	)
 
 
-	# Cresce
-
-	tween.tween_property(
+	zero_tween.tween_property(
 		current_value_label,
 		"scale",
 		Vector2(1.45, 1.45),
-		0.10
+		0.08
 	)
 
 
-	tween.tween_interval(
-		0.10
-	)
-
-
-	# Volta ao tamanho normal
-
-	tween.tween_property(
+	zero_tween.tween_property(
 		current_value_label,
 		"scale",
 		Vector2.ONE,
-		0.12
+		0.10
 	)
 
 
-	await tween.finished
+	zero_tween.finished.connect(
+		func():
 
-
-	# Volta para preto
-
-	current_value_label.add_theme_color_override(
-		"font_color",
-		TEXT_NORMAL
+			current_value_label.add_theme_color_override(
+				"font_color",
+				TEXT_NORMAL
+			)
 	)
 
 
-	print("Passou da meta.")
+	# =====================================================
+	# CORAÇÃO
+	#
+	# Também acontece sem bloquear os balões.
+	# =====================================================
+
+	animate_lost_heart(
+		lost_heart
+	)
+
+
+	# =====================================================
+	# SEM VIDAS
+	# =====================================================
+
+	if lives <= 0:
+
+		phase_completed = true
+
+		final_stars = 0
+
+
+		print(
+			"FIM DE JOGO"
+		)
+
+
+		print(
+			"Contas concluídas: ",
+			current_step - 1,
+			"/10"
+		)
+
+
+		print(
+			"Tempo: ",
+			elapsed_time
+		)
+
+
+		print(
+			"Estrelas: 0"
+		)
+
+
+		return
+
 
 	print(
-		"Atual voltou para 0."
+		"Vida perdida."
 	)
 
+
 	print(
-		"Meta continua sendo ",
+		"Vidas restantes: ",
+		lives
+	)
+
+
+	print(
+		"Meta continua sendo: ",
 		goal_value
 	)
 
 
 # =========================================================
-# ATINGIU A META
+# PRÓXIMA META
 # =========================================================
 
-func handle_goal_reached() -> void:
+func advance_to_next_goal() -> void:
 
-	print("META ATINGIDA!")
+	print(
+		"META ATINGIDA!"
+	)
 
 
 	# =====================================================
-	# DÉCIMA META
+	# DÉCIMA CONTA
 	# =====================================================
 
 	if current_step >= TOTAL_STEPS:
 
-		progress_label.text = (
-			str(TOTAL_STEPS)
-			+ "/"
-			+ str(TOTAL_STEPS)
+		current_value = 0
+
+
+		current_value_label.text = (
+			"0"
 		)
+
+
+		progress_label.text = (
+			"10/10"
+		)
+
 
 		phase_completed = true
 
-		print("FASE COMPLETA!")
+
+		final_stars = (
+			calculate_stars()
+		)
+
+
+		print(
+			"FASE CONCLUÍDA!"
+		)
+
+
+		print(
+			"Tempo: ",
+			elapsed_time
+		)
+
+
+		print(
+			"Vidas restantes: ",
+			lives
+		)
+
+
+		print(
+			"Estrelas: ",
+			final_stars
+		)
+
 
 		return
 
 
 	# =====================================================
-	# PRÓXIMO DESAFIO
+	# PRÓXIMA CONTA
 	# =====================================================
 
 	current_step += 1
 
 
-	# ATUAL volta para zero sem animação
+	# -----------------------------------------------------
+	# ATUAL
+	# -----------------------------------------------------
 
 	current_value = 0
 
-	current_value_label.text = "0"
+
+	current_value_label.text = (
+		"0"
+	)
+
 
 	current_value_label.scale = (
 		Vector2.ONE
 	)
+
 
 	current_value_label.add_theme_color_override(
 		"font_color",
@@ -923,41 +1500,36 @@ func handle_goal_reached() -> void:
 	)
 
 
-	# Atualiza contador
+	# -----------------------------------------------------
+	# PROGRESSO
+	# -----------------------------------------------------
 
-	progress_label.text = (
-		str(current_step)
-		+ "/"
-		+ str(TOTAL_STEPS)
+	update_progress_ui()
+
+
+	# -----------------------------------------------------
+	# NOVA META
+	# -----------------------------------------------------
+
+	goal_value = (
+		SUM_TARGETS[
+			current_step - 1
+		]
 	)
 
 
-	# Meta anterior
+	# Não bloqueia o jogo.
 
-	var previous_goal = (
-		goal_value
-	)
-
-
-	# Nova meta
-
-	goal_value = generate_new_goal(
-		previous_goal
-	)
-
-
-	# Somente a NOVA META
-	# cresce e fica verde
-
-	await animate_new_goal()
+	animate_new_goal()
 
 
 	print(
-		"Nova rodada: ",
+		"Nova conta: ",
 		current_step,
 		"/",
 		TOTAL_STEPS
 	)
+
 
 	print(
 		"Nova meta: ",
@@ -966,12 +1538,10 @@ func handle_goal_reached() -> void:
 
 
 # =========================================================
-# NOVA META
+# PRIMEIRA META
 # =========================================================
 
-func animate_new_goal() -> void:
-
-	# Troca imediatamente
+func animate_goal_intro() -> void:
 
 	goal_value_label.text = (
 		str(goal_value)
@@ -979,16 +1549,19 @@ func animate_new_goal() -> void:
 
 
 	goal_value_label.pivot_offset = (
-		goal_value_label.size / 2.0
+		goal_value_label.size
+		/ 2.0
 	)
 
+
+	# Começa grande.
 
 	goal_value_label.scale = (
-		Vector2.ONE
+		Vector2(1.55, 1.55)
 	)
 
 
-	# Verde
+	# Começa azul.
 
 	goal_value_label.add_theme_color_override(
 		"font_color",
@@ -998,74 +1571,140 @@ func animate_new_goal() -> void:
 
 	var tween = create_tween()
 
+
 	tween.set_trans(
 		Tween.TRANS_BACK
 	)
+
 
 	tween.set_ease(
 		Tween.EASE_OUT
 	)
 
 
-	# Cresce
-
 	tween.tween_property(
 		goal_value_label,
 		"scale",
-		Vector2(1.40, 1.40),
-		0.10
+		Vector2.ONE,
+		0.35
 	)
 
 
-	tween.tween_interval(
-		0.08
+	tween.finished.connect(
+		func():
+
+			goal_value_label.add_theme_color_override(
+				"font_color",
+				TEXT_NORMAL
+			)
 	)
 
 
-	# Volta
+# =========================================================
+# NOVA META
+# =========================================================
+
+func animate_new_goal() -> void:
+
+	goal_value_label.text = (
+		str(goal_value)
+	)
+
+
+	goal_value_label.pivot_offset = (
+		goal_value_label.size
+		/ 2.0
+	)
+
+
+	# Nasce grande.
+
+	goal_value_label.scale = (
+		Vector2(1.50, 1.50)
+	)
+
+
+	# Nasce azul.
+
+	goal_value_label.add_theme_color_override(
+		"font_color",
+		GOAL_COLOR
+	)
+
+
+	var tween = create_tween()
+
+
+	tween.set_trans(
+		Tween.TRANS_BACK
+	)
+
+
+	tween.set_ease(
+		Tween.EASE_OUT
+	)
+
 
 	tween.tween_property(
 		goal_value_label,
 		"scale",
 		Vector2.ONE,
-		0.12
+		0.25
 	)
 
 
-	await tween.finished
+	tween.finished.connect(
+		func():
 
-
-	# Preto novamente
-
-	goal_value_label.add_theme_color_override(
-		"font_color",
-		TEXT_NORMAL
+			goal_value_label.add_theme_color_override(
+				"font_color",
+				TEXT_NORMAL
+			)
 	)
 
 
 # =========================================================
-# GERAÇÃO DA META
+# ESTRELAS
 # =========================================================
 
-func generate_new_goal(
-	previous_goal: int
-) -> int:
+func calculate_stars() -> int:
 
-	var new_goal = (
-		randi_range(25, 45)
-	)
+	var stars_by_time: int = 0
 
 
-	# Não repete a mesma meta
+	if elapsed_time <= STAR_3_LIMIT:
 
-	while new_goal == previous_goal:
+		stars_by_time = 3
 
-		new_goal = (
-			randi_range(25, 45)
+
+	elif elapsed_time <= STAR_2_LIMIT:
+
+		stars_by_time = 2
+
+
+	elif elapsed_time <= STAR_1_LIMIT:
+
+		stars_by_time = 1
+
+
+	else:
+
+		stars_by_time = 0
+
+
+	var life_limit = (
+		clampi(
+			lives,
+			0,
+			3
 		)
+	)
 
 
-	return new_goal
+	return min(
+		stars_by_time,
+		life_limit
+	)
 
 
 # =========================================================
@@ -1103,8 +1742,6 @@ func pop_balloon(
 	var tween = create_tween()
 
 
-	# Cresce rapidamente
-
 	tween.tween_property(
 		balloon,
 		"scale",
@@ -1112,8 +1749,6 @@ func pop_balloon(
 		0.04
 	)
 
-
-	# Some
 
 	tween.parallel().tween_property(
 		balloon,
@@ -1148,8 +1783,6 @@ func create_pop_text(
 	pop_position: Vector2,
 	text_value: String
 ) -> void:
-
-	# Balão neutro
 
 	if text_value == "":
 		return
@@ -1197,8 +1830,6 @@ func create_pop_text(
 	var tween = create_tween()
 
 
-	# Sobe
-
 	tween.parallel().tween_property(
 		pop_label,
 		"position:y",
@@ -1206,8 +1837,6 @@ func create_pop_text(
 		0.30
 	)
 
-
-	# Desaparece
 
 	tween.parallel().tween_property(
 		pop_label,
@@ -1224,7 +1853,7 @@ func create_pop_text(
 
 
 # =========================================================
-# PARTÍCULAS DO POP
+# PARTÍCULAS
 # =========================================================
 
 func create_pop_sparks(
@@ -1243,17 +1872,13 @@ func create_pop_sparks(
 		var spark = Polygon2D.new()
 
 
-		spark.polygon = (
-			PackedVector2Array([
-				Vector2(-4, -7),
-				Vector2(4, -7),
-				Vector2(4, 7),
-				Vector2(-4, 7)
-			])
-		)
+		spark.polygon = PackedVector2Array([
+			Vector2(-4, -7),
+			Vector2(4, -7),
+			Vector2(4, 7),
+			Vector2(-4, 7)
+		])
 
-
-		# Tons de amarelo
 
 		if i % 3 == 0:
 
@@ -1314,21 +1939,20 @@ func create_pop_sparks(
 		)
 
 
-		var tween = create_tween()
+		var spark_tween = create_tween()
 
 
-		tween.set_trans(
+		spark_tween.set_trans(
 			Tween.TRANS_QUAD
 		)
 
-		tween.set_ease(
+
+		spark_tween.set_ease(
 			Tween.EASE_OUT
 		)
 
 
-		# Espalha
-
-		tween.parallel().tween_property(
+		spark_tween.parallel().tween_property(
 			spark,
 			"position",
 			target_position,
@@ -1336,9 +1960,7 @@ func create_pop_sparks(
 		)
 
 
-		# Gira
-
-		tween.parallel().tween_property(
+		spark_tween.parallel().tween_property(
 			spark,
 			"rotation",
 			spark.rotation + 1.2,
@@ -1346,9 +1968,7 @@ func create_pop_sparks(
 		)
 
 
-		# Desaparece
-
-		tween.parallel().tween_property(
+		spark_tween.parallel().tween_property(
 			spark,
 			"modulate:a",
 			0.0,
@@ -1356,7 +1976,7 @@ func create_pop_sparks(
 		)
 
 
-		tween.finished.connect(
+		spark_tween.finished.connect(
 			func():
 				spark.queue_free()
 		)
@@ -1421,24 +2041,3 @@ func reposition_clouds() -> void:
 					SCREEN_WIDTH
 					+ 400.0
 				)
-
-
-# =========================================================
-# ATUALIZAÇÃO DIRETA DA UI
-# =========================================================
-
-func update_ui() -> void:
-
-	progress_label.text = (
-		str(current_step)
-		+ "/"
-		+ str(TOTAL_STEPS)
-	)
-
-	current_value_label.text = (
-		str(current_value)
-	)
-
-	goal_value_label.text = (
-		str(goal_value)
-	)
