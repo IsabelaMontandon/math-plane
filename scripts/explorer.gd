@@ -1,16 +1,8 @@
 extends Node2D
 
 
-# =========================================================
-# CORAÇÃO VAZIO
-# =========================================================
-
 @export var heart_empty_texture: Texture2D
 
-
-# =========================================================
-# NÓS
-# =========================================================
 
 @onready var landscape_a = $Background/LandscapeA
 @onready var landscape_b = $Background/LandscapeB
@@ -31,6 +23,24 @@ extends Node2D
 @onready var heart2 = $UI/LivesContainer/Heart2
 @onready var heart3 = $UI/LivesContainer/Heart3
 
+@onready var gameplay_map_button = $UI/BottomControls/MapButton
+@onready var gameplay_restart_button = $UI/BottomControls/RestartButton
+@onready var gameplay_pause_button = $UI/BottomControls/PauseButton
+
+@onready var pause_overlay = $UI/PauseOverlay
+
+@onready var pause_continue_button = (
+	$UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/ButtonsContainer/ContinueButton
+)
+
+@onready var pause_restart_button = (
+	$UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/ButtonsContainer/RestartButton
+)
+
+@onready var pause_map_button = (
+	$UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/ButtonsContainer/MapButton
+)
+
 
 var balloon_scene = preload(
 	"res://scenes/gameplay/balloon.tscn"
@@ -39,25 +49,11 @@ var balloon_scene = preload(
 var heart_full_texture: Texture2D
 
 
-# =========================================================
-# CORES
-# =========================================================
-
 const TEXT_NORMAL = Color("#1E1E1E")
-
-# Soma normal
 const CURRENT_HIGHLIGHT = Color("#2E9E5B")
-
-# Erro
 const ERROR_COLOR = Color("#E53935")
-
-# Meta
 const GOAL_COLOR = Color("#2684D9")
 
-
-# =========================================================
-# VERÃO / SOMA / EXPLORADOR
-# =========================================================
 
 const SUM_TARGETS = [
 	6,
@@ -76,30 +72,18 @@ const TOTAL_STEPS = 10
 const MAX_LIVES = 3
 
 
-# =========================================================
-# ESTRELAS
-# =========================================================
-
+# Limites de tempo do Explorador para 3, 2 e 1 estrela.
 const STAR_3_LIMIT = 60.0
 const STAR_2_LIMIT = 120.0
 const STAR_1_LIMIT = 210.0
 
 
-# =========================================================
-# CENÁRIO
-# =========================================================
-
 const BACKGROUND_MOVE_DISTANCE = 220.0
 const CLOUD_MOVE_DISTANCE = 70.0
 
 const MOVE_TIME = 0.45
-
 const SCREEN_WIDTH = 1600.0
 
-
-# =========================================================
-# LINHAS
-# =========================================================
 
 const ROW_POSITIONS = [
 	240.0,
@@ -108,10 +92,6 @@ const ROW_POSITIONS = [
 	630.0
 ]
 
-
-# =========================================================
-# COLUNAS
-# =========================================================
 
 const COLUMN_POSITIONS = [
 	680.0,
@@ -122,10 +102,6 @@ const COLUMN_POSITIONS = [
 
 const COLUMN_DISTANCE = 220.0
 
-
-# =========================================================
-# ESTADO
-# =========================================================
 
 var current_step: int = 1
 var current_value: int = 0
@@ -150,24 +126,19 @@ var columns: Array[Node2D] = []
 var column_serial: int = 0
 
 
-# =========================================================
-# INÍCIO
-# =========================================================
-
 func _ready() -> void:
 
-	heart_full_texture = heart1.texture
+	# Evita que a cena seja carregada ainda pausada após reiniciar ou voltar do mapa.
+	get_tree().paused = false
 
+	setup_pause_system()
+
+	heart_full_texture = heart1.texture
 
 	if heart_empty_texture == null:
 		push_warning(
 			"Defina Heart Empty Texture no nó Explorer."
 		)
-
-
-	# -----------------------------------------------------
-	# ESTADO INICIAL
-	# -----------------------------------------------------
 
 	current_step = 1
 	current_value = 0
@@ -181,46 +152,30 @@ func _ready() -> void:
 	phase_completed = false
 
 
-	# -----------------------------------------------------
-	# FUNDO
-	# -----------------------------------------------------
-
 	background_width = (
 		landscape_a.texture.get_width()
 		* abs(landscape_a.scale.x)
 	)
 
-
 	landscape_a.position.x = (
 		background_width / 2.0
 	)
 
-
 	landscape_b.position.x = (
 		background_width * 1.5
 	)
-
 
 	landscape_b.position.y = (
 		landscape_a.position.y
 	)
 
 
-	# -----------------------------------------------------
-	# AVIÃO
-	# -----------------------------------------------------
-
 	plane.position.y = (
 		ROW_POSITIONS[current_row]
 	)
 
 
-	# -----------------------------------------------------
-	# INTERFACE
-	# -----------------------------------------------------
-
 	setup_ui_alignment()
-
 	reset_ui_colors()
 
 	update_progress_ui()
@@ -228,32 +183,119 @@ func _ready() -> void:
 	update_goal_ui()
 	update_lives_ui()
 
-
-	# -----------------------------------------------------
-	# BALÕES
-	# -----------------------------------------------------
-
 	create_initial_columns()
 
 
-	# -----------------------------------------------------
-	# PRIMEIRA META EM DESTAQUE
-	# -----------------------------------------------------
-
+	# A primeira meta começa destacada para chamar a atenção do jogador.
 	call_deferred(
 		"animate_goal_intro"
 	)
 
 
-# =========================================================
-# TEMPO
-# =========================================================
+func setup_pause_system() -> void:
+
+	pause_overlay.visible = false
+
+
+	# O menu precisa continuar funcionando enquanto a árvore inteira estiver pausada.
+	pause_overlay.process_mode = (
+		Node.PROCESS_MODE_WHEN_PAUSED
+	)
+
+
+	# Remove o foco do teclado para as setas controlarem apenas o avião.
+	gameplay_map_button.focus_mode = Control.FOCUS_NONE
+	gameplay_restart_button.focus_mode = Control.FOCUS_NONE
+	gameplay_pause_button.focus_mode = Control.FOCUS_NONE
+
+	pause_continue_button.focus_mode = Control.FOCUS_NONE
+	pause_restart_button.focus_mode = Control.FOCUS_NONE
+	pause_map_button.focus_mode = Control.FOCUS_NONE
+
+
+	gameplay_map_button.pressed.connect(
+		go_to_map
+	)
+
+	gameplay_restart_button.pressed.connect(
+		restart_game
+	)
+
+	gameplay_pause_button.pressed.connect(
+		open_pause_menu
+	)
+
+
+	pause_continue_button.pressed.connect(
+		close_pause_menu
+	)
+
+	pause_restart_button.pressed.connect(
+		restart_game
+	)
+
+	pause_map_button.pressed.connect(
+		go_to_map
+	)
+
+
+func open_pause_menu() -> void:
+
+	if phase_completed:
+		return
+
+
+	# Em uma pausa normal o jogador ainda pode continuar.
+	pause_continue_button.visible = true
+
+	pause_overlay.visible = true
+
+	get_tree().paused = true
+
+
+func open_end_menu() -> void:
+
+	# Ao vencer ou perder, só ficam disponíveis Reiniciar e Mapa.
+	pause_continue_button.visible = false
+
+	pause_overlay.visible = true
+
+	get_tree().paused = true
+
+
+func close_pause_menu() -> void:
+
+	if phase_completed:
+		return
+
+
+	get_tree().paused = false
+
+	pause_overlay.visible = false
+
+
+func restart_game() -> void:
+
+	# É necessário despausar antes de recarregar a cena.
+	get_tree().paused = false
+
+	get_tree().reload_current_scene()
+
+
+func go_to_map() -> void:
+
+	# Também é necessário despausar antes de trocar de cena.
+	get_tree().paused = false
+
+	get_tree().change_scene_to_file(
+		"res://scenes/ui/map_menu.tscn"
+	)
+
 
 func _process(delta: float) -> void:
 
 	if phase_completed:
 		return
-
 
 	if get_tree().paused:
 		return
@@ -262,14 +304,51 @@ func _process(delta: float) -> void:
 	elapsed_time += delta
 
 
-# =========================================================
-# CENTRALIZAÇÃO
-# =========================================================
+func _unhandled_input(
+	event: InputEvent
+) -> void:
+
+	if phase_completed:
+		return
+
+	if get_tree().paused:
+		return
+
+	if not event is InputEventKey:
+		return
+
+	if not event.pressed:
+		return
+
+	if event.echo:
+		return
+
+	if is_moving:
+		return
+
+
+	if event.keycode == KEY_UP:
+		move_plane_up()
+
+	elif event.keycode == KEY_DOWN:
+		move_plane_down()
+
+	elif event.keycode == KEY_RIGHT:
+		move_forward()
+
 
 func setup_ui_alignment() -> void:
 
+	progress_label.set_anchors_and_offsets_preset(
+		Control.PRESET_FULL_RECT
+	)
+
 	progress_label.horizontal_alignment = (
 		HORIZONTAL_ALIGNMENT_CENTER
+	)
+
+	progress_label.vertical_alignment = (
+		VERTICAL_ALIGNMENT_CENTER
 	)
 
 
@@ -277,25 +356,18 @@ func setup_ui_alignment() -> void:
 		HORIZONTAL_ALIGNMENT_CENTER
 	)
 
-
 	current_value_label.horizontal_alignment = (
 		HORIZONTAL_ALIGNMENT_CENTER
 	)
-
 
 	goal_title.horizontal_alignment = (
 		HORIZONTAL_ALIGNMENT_CENTER
 	)
 
-
 	goal_value_label.horizontal_alignment = (
 		HORIZONTAL_ALIGNMENT_CENTER
 	)
 
-
-# =========================================================
-# CORES NORMAIS
-# =========================================================
 
 func reset_ui_colors() -> void:
 
@@ -304,34 +376,26 @@ func reset_ui_colors() -> void:
 		TEXT_NORMAL
 	)
 
-
 	current_value_label.add_theme_color_override(
 		"font_color",
 		TEXT_NORMAL
 	)
-
 
 	goal_title.add_theme_color_override(
 		"font_color",
 		TEXT_NORMAL
 	)
 
-
 	goal_value_label.add_theme_color_override(
 		"font_color",
 		TEXT_NORMAL
 	)
-
 
 	progress_label.add_theme_color_override(
 		"font_color",
 		TEXT_NORMAL
 	)
 
-
-# =========================================================
-# INTERFACE
-# =========================================================
 
 func update_progress_ui() -> void:
 
@@ -356,10 +420,6 @@ func update_goal_ui() -> void:
 	)
 
 
-# =========================================================
-# VIDAS
-# =========================================================
-
 func update_lives_ui() -> void:
 
 	set_heart_state(
@@ -367,12 +427,10 @@ func update_lives_ui() -> void:
 		lives >= 1
 	)
 
-
 	set_heart_state(
 		heart2,
 		lives >= 2
 	)
-
 
 	set_heart_state(
 		heart3,
@@ -388,21 +446,18 @@ func set_heart_state(
 	if is_full:
 
 		heart.texture = heart_full_texture
-
 		heart.modulate = Color.WHITE
-
 
 	else:
 
 		if heart_empty_texture != null:
 
 			heart.texture = heart_empty_texture
-
 			heart.modulate = Color.WHITE
-
 
 		else:
 
+			# Fallback caso o coração vazio não tenha sido configurado.
 			heart.texture = heart_full_texture
 
 			heart.modulate = Color(
@@ -413,10 +468,6 @@ func set_heart_state(
 			)
 
 
-# =========================================================
-# ANIMAÇÃO DO CORAÇÃO PERDIDO
-# =========================================================
-
 func animate_lost_heart(
 	heart: TextureRect
 ) -> void:
@@ -425,17 +476,14 @@ func animate_lost_heart(
 		heart.size / 2.0
 	)
 
-
 	heart.scale = Vector2.ONE
 
 
 	var tween = create_tween()
 
-
 	tween.set_trans(
 		Tween.TRANS_BACK
 	)
-
 
 	tween.set_ease(
 		Tween.EASE_OUT
@@ -448,7 +496,6 @@ func animate_lost_heart(
 		Vector2(1.30, 1.30),
 		0.08
 	)
-
 
 	tween.tween_property(
 		heart,
@@ -463,13 +510,8 @@ func animate_lost_heart(
 
 	update_lives_ui()
 
-
 	heart.scale = Vector2.ONE
 
-
-# =========================================================
-# CORAÇÃO PERDIDO
-# =========================================================
 
 func get_lost_heart(
 	previous_lives: int
@@ -478,73 +520,22 @@ func get_lost_heart(
 	if previous_lives == 3:
 		return heart3
 
-
 	if previous_lives == 2:
 		return heart2
 
-
 	return heart1
 
-
-# =========================================================
-# CONTROLES
-# =========================================================
-
-func _unhandled_input(
-	event: InputEvent
-) -> void:
-
-	if phase_completed:
-		return
-
-
-	if not event is InputEventKey:
-		return
-
-
-	if not event.pressed:
-		return
-
-
-	if event.echo:
-		return
-
-
-	if is_moving:
-		return
-
-
-	if event.keycode == KEY_UP:
-
-		move_plane_up()
-
-
-	elif event.keycode == KEY_DOWN:
-
-		move_plane_down()
-
-
-	elif event.keycode == KEY_RIGHT:
-
-		move_forward()
-
-
-# =========================================================
-# MOVIMENTO VERTICAL
-# =========================================================
 
 func move_plane_up() -> void:
 
 	if is_plane_moving:
 		return
 
-
 	if current_row <= 0:
 		return
 
 
 	current_row -= 1
-
 
 	move_plane_to_current_row()
 
@@ -554,16 +545,13 @@ func move_plane_down() -> void:
 	if is_plane_moving:
 		return
 
-
 	if current_row >= (
 		ROW_POSITIONS.size() - 1
 	):
-
 		return
 
 
 	current_row += 1
-
 
 	move_plane_to_current_row()
 
@@ -575,16 +563,13 @@ func move_plane_to_current_row() -> void:
 
 	var tween = create_tween()
 
-
 	tween.set_trans(
 		Tween.TRANS_QUAD
 	)
 
-
 	tween.set_ease(
 		Tween.EASE_OUT
 	)
-
 
 	tween.tween_property(
 		plane,
@@ -599,10 +584,6 @@ func move_plane_to_current_row() -> void:
 
 	is_plane_moving = false
 
-
-# =========================================================
-# OPÇÕES VÁLIDAS
-# =========================================================
 
 func get_valid_sum_options() -> Array[int]:
 
@@ -627,10 +608,6 @@ func get_valid_sum_options() -> Array[int]:
 	return valid
 
 
-# =========================================================
-# CRIA AS COLUNAS INICIAIS
-# =========================================================
-
 func create_initial_columns() -> void:
 
 	columns.clear()
@@ -644,15 +621,10 @@ func create_initial_columns() -> void:
 			)
 		)
 
-
 		columns.append(
 			column
 		)
 
-
-# =========================================================
-# CRIA UMA COLUNA
-# =========================================================
 
 func create_balloon_column(
 	x_position: float
@@ -660,16 +632,11 @@ func create_balloon_column(
 
 	var column = Node2D.new()
 
-
-	column.name = (
-		"BalloonColumn"
-	)
-
+	column.name = "BalloonColumn"
 
 	balloon_rows.add_child(
 		column
 	)
-
 
 	column.position.x = (
 		x_position
@@ -678,19 +645,17 @@ func create_balloon_column(
 
 	var id = column_serial
 
-
 	column_serial += 1
 
 
+	# Cada coluna tem um balão vazio e uma opção garantidamente possível.
 	var empty_row = (
 		id % 4
 	)
 
-
 	var good_row = (
 		(id + 2) % 4
 	)
-
 
 	var valid = (
 		get_valid_sum_options()
@@ -703,19 +668,15 @@ func create_balloon_column(
 			balloon_scene.instantiate()
 		)
 
-
 		column.add_child(
 			balloon
 		)
 
-
 		balloon.position.x = 0
-
 
 		balloon.position.y = (
 			ROW_POSITIONS[row]
 		)
-
 
 		balloon.set_meta(
 			"row_index",
@@ -723,18 +684,10 @@ func create_balloon_column(
 		)
 
 
-		# ---------------------------------------------
-		# BALÃO VAZIO
-		# ---------------------------------------------
-
 		if row == empty_row:
 
 			balloon.set_blank()
 
-
-		# ---------------------------------------------
-		# CAMINHO POSSÍVEL
-		# ---------------------------------------------
 
 		elif row == good_row:
 
@@ -755,10 +708,6 @@ func create_balloon_column(
 			)
 
 
-		# ---------------------------------------------
-		# OUTRAS OPÇÕES
-		# ---------------------------------------------
-
 		else:
 
 			var value = (
@@ -772,7 +721,6 @@ func create_balloon_column(
 				)
 			)
 
-
 			balloon.set_operation(
 				value
 			)
@@ -780,10 +728,6 @@ func create_balloon_column(
 
 	return column
 
-
-# =========================================================
-# ENCONTRA BALÃO DA LINHA
-# =========================================================
 
 func get_balloon_in_row(
 	column: Node2D,
@@ -802,30 +746,13 @@ func get_balloon_in_row(
 	return null
 
 
-# =========================================================
-# AVANÇAR
-#
-# IMPORTANTE:
-#
-# O movimento dos balões é SEMPRE o mesmo.
-#
-# - soma normal
-# - bate meta
-# - perde vida
-# - balão vazio
-#
-# Nenhum desses casos recria as quatro colunas.
-# =========================================================
-
 func move_forward() -> void:
 
 	if is_moving:
 		return
 
-
 	if is_plane_moving:
 		return
-
 
 	if columns.is_empty():
 		return
@@ -850,24 +777,17 @@ func move_forward() -> void:
 	)
 
 
-	# =====================================================
-	# MOVIMENTO NORMAL DO MUNDO
-	# =====================================================
-
+	# Fundo, nuvens, colunas e avião avançam juntos.
 	var tween = create_tween()
-
 
 	tween.set_trans(
 		Tween.TRANS_QUAD
 	)
 
-
 	tween.set_ease(
 		Tween.EASE_IN_OUT
 	)
 
-
-	# Fundo
 
 	tween.parallel().tween_property(
 		landscape_a,
@@ -877,7 +797,6 @@ func move_forward() -> void:
 		MOVE_TIME
 	)
 
-
 	tween.parallel().tween_property(
 		landscape_b,
 		"position:x",
@@ -885,9 +804,6 @@ func move_forward() -> void:
 		- BACKGROUND_MOVE_DISTANCE,
 		MOVE_TIME
 	)
-
-
-	# Nuvens
 
 	tween.parallel().tween_property(
 		clouds,
@@ -897,8 +813,6 @@ func move_forward() -> void:
 		MOVE_TIME
 	)
 
-
-	# Todas as colunas
 
 	for column in columns:
 
@@ -911,8 +825,6 @@ func move_forward() -> void:
 		)
 
 
-	# Avião
-
 	tween.parallel().tween_property(
 		plane,
 		"position:x",
@@ -924,16 +836,7 @@ func move_forward() -> void:
 	await tween.finished
 
 
-	# =====================================================
-	# RESULTADO DO BALÃO
-	# =====================================================
-
 	if selected_balloon != null:
-
-
-		# -------------------------------------------------
-		# BALÃO VAZIO
-		# -------------------------------------------------
 
 		if selected_balloon.get_is_blank():
 
@@ -941,17 +844,11 @@ func move_forward() -> void:
 				selected_balloon
 			)
 
-
-		# -------------------------------------------------
-		# BALÃO COM OPERAÇÃO
-		# -------------------------------------------------
-
 		else:
 
 			var value = (
 				selected_balloon.get_operation()
 			)
-
 
 			var new_value = (
 				current_value
@@ -959,49 +856,25 @@ func move_forward() -> void:
 			)
 
 
-			# =============================================
-			# PASSOU DA META
-			# =============================================
-
 			if new_value > goal_value:
-
-				# Explosão normal.
 
 				await pop_balloon(
 					selected_balloon
 				)
 
-
-				# Perde vida.
-				#
-				# NÃO aguardamos coração ou zero.
-				# O movimento continua normalmente.
-
 				handle_wrong_operation()
 
 
-			# =============================================
-			# BATEU A META
-			# =============================================
-
 			elif new_value == goal_value:
 
-				# Não mostra o valor final.
-				#
-				# ATUAL vai direto para zero.
-
+				# Ao atingir a meta, o ATUAL vai direto para zero.
 				current_value = 0
 
-
-				current_value_label.text = (
-					"0"
-				)
-
+				current_value_label.text = "0"
 
 				current_value_label.scale = (
 					Vector2.ONE
 				)
-
 
 				current_value_label.add_theme_color_override(
 					"font_color",
@@ -1009,57 +882,37 @@ func move_forward() -> void:
 				)
 
 
-				# Nova meta imediatamente.
-
+				# A nova meta aparece imediatamente enquanto o restante da animação continua.
 				advance_to_next_goal()
 
-
-				# POP normal.
 
 				await pop_balloon(
 					selected_balloon
 				)
 
 
-			# =============================================
-			# SOMA NORMAL
-			# =============================================
-
 			else:
 
-				current_value = (
-					new_value
-				)
-
+				current_value = new_value
 
 				animate_current_value(
 					current_value
 				)
 
-
 				await pop_balloon(
 					selected_balloon
 				)
 
 
-	# =====================================================
-	# AVIÃO VOLTA
-	#
-	# SEMPRE acontece do mesmo jeito.
-	# =====================================================
-
 	var return_tween = create_tween()
-
 
 	return_tween.set_trans(
 		Tween.TRANS_QUAD
 	)
 
-
 	return_tween.set_ease(
 		Tween.EASE_OUT
 	)
-
 
 	return_tween.tween_property(
 		plane,
@@ -1072,26 +925,17 @@ func move_forward() -> void:
 	await return_tween.finished
 
 
-	# =====================================================
-	# PRIMEIRA COLUNA SAI
-	#
-	# Também SEMPRE acontece.
-	#
-	# Inclusive quando perdeu uma vida.
-	# =====================================================
-
+	# A primeira coluna sai em todas as situações:
+	# soma normal, meta alcançada, balão vazio ou perda de vida.
 	var exit_tween = create_tween()
-
 
 	exit_tween.set_trans(
 		Tween.TRANS_QUAD
 	)
 
-
 	exit_tween.set_ease(
 		Tween.EASE_IN
 	)
-
 
 	exit_tween.tween_property(
 		first_column,
@@ -1108,45 +952,28 @@ func move_forward() -> void:
 		first_column
 	)
 
-
 	first_column.queue_free()
 
 
-	# =====================================================
-	# FIM DA FASE OU SEM VIDAS
-	# =====================================================
-
+	# Vitória e derrota só mostram o painel depois da animação da jogada terminar.
 	if phase_completed:
 
 		reposition_backgrounds()
-
 		reposition_clouds()
-
 
 		is_moving = false
 
+		open_end_menu()
 
 		return
 
 
-	# =====================================================
-	# NOVA QUARTA COLUNA
-	#
-	# As três anteriores continuam intactas.
-	#
-	# Isso acontece tanto em:
-	#
-	# - jogada normal
-	# - meta batida
-	# - vida perdida
-	# =====================================================
-
+	# As três colunas restantes são mantidas e apenas uma nova entra pela direita.
 	var new_column = (
 		create_balloon_column(
 			COLUMN_POSITIONS[3]
 		)
 	)
-
 
 	columns.append(
 		new_column
@@ -1154,16 +981,10 @@ func move_forward() -> void:
 
 
 	reposition_backgrounds()
-
 	reposition_clouds()
-
 
 	is_moving = false
 
-
-# =========================================================
-# SOMA NORMAL
-# =========================================================
 
 func animate_current_value(
 	new_value: int
@@ -1173,17 +994,11 @@ func animate_current_value(
 		str(new_value)
 	)
 
-
 	current_value_label.pivot_offset = (
-		current_value_label.size
-		/ 2.0
+		current_value_label.size / 2.0
 	)
 
-
-	current_value_label.scale = (
-		Vector2.ONE
-	)
-
+	current_value_label.scale = Vector2.ONE
 
 	current_value_label.add_theme_color_override(
 		"font_color",
@@ -1193,16 +1008,13 @@ func animate_current_value(
 
 	var tween = create_tween()
 
-
 	tween.set_trans(
 		Tween.TRANS_BACK
 	)
 
-
 	tween.set_ease(
 		Tween.EASE_OUT
 	)
-
 
 	tween.tween_property(
 		current_value_label,
@@ -1211,11 +1023,9 @@ func animate_current_value(
 		0.08
 	)
 
-
 	tween.tween_interval(
 		0.04
 	)
-
 
 	tween.tween_property(
 		current_value_label,
@@ -1235,22 +1045,9 @@ func animate_current_value(
 	)
 
 
-# =========================================================
-# PERDA DE VIDA
-#
-# IMPORTANTE:
-#
-# Não há await aqui.
-#
-# Coração e ATUAL animam enquanto
-# os balões continuam normalmente.
-# =========================================================
-
 func handle_wrong_operation() -> void:
 
-	var previous_lives = (
-		lives
-	)
+	var previous_lives = lives
 
 
 	var lost_heart = (
@@ -1260,35 +1057,19 @@ func handle_wrong_operation() -> void:
 	)
 
 
-	# =====================================================
-	# PERDE VIDA
-	# =====================================================
-
 	lives -= 1
 
 
-	# =====================================================
-	# ATUAL DIRETO PARA ZERO
-	# =====================================================
-
+	# O valor incorreto não é exibido: ATUAL volta diretamente para zero.
 	current_value = 0
 
-
-	current_value_label.text = (
-		"0"
-	)
-
+	current_value_label.text = "0"
 
 	current_value_label.pivot_offset = (
-		current_value_label.size
-		/ 2.0
+		current_value_label.size / 2.0
 	)
 
-
-	current_value_label.scale = (
-		Vector2.ONE
-	)
-
+	current_value_label.scale = Vector2.ONE
 
 	current_value_label.add_theme_color_override(
 		"font_color",
@@ -1296,24 +1077,15 @@ func handle_wrong_operation() -> void:
 	)
 
 
-	# =====================================================
-	# ANIMAÇÃO DO ZERO
-	#
-	# Não bloqueia o jogo.
-	# =====================================================
-
 	var zero_tween = create_tween()
-
 
 	zero_tween.set_trans(
 		Tween.TRANS_BACK
 	)
 
-
 	zero_tween.set_ease(
 		Tween.EASE_OUT
 	)
-
 
 	zero_tween.tween_property(
 		current_value_label,
@@ -1321,7 +1093,6 @@ func handle_wrong_operation() -> void:
 		Vector2(1.45, 1.45),
 		0.08
 	)
-
 
 	zero_tween.tween_property(
 		current_value_label,
@@ -1341,20 +1112,11 @@ func handle_wrong_operation() -> void:
 	)
 
 
-	# =====================================================
-	# CORAÇÃO
-	#
-	# Também acontece sem bloquear os balões.
-	# =====================================================
-
+	# A animação do coração acontece em paralelo para não travar os balões.
 	animate_lost_heart(
 		lost_heart
 	)
 
-
-	# =====================================================
-	# SEM VIDAS
-	# =====================================================
 
 	if lives <= 0:
 
@@ -1362,79 +1124,20 @@ func handle_wrong_operation() -> void:
 
 		final_stars = 0
 
-
 		print(
 			"FIM DE JOGO"
 		)
 
 
-		print(
-			"Contas concluídas: ",
-			current_step - 1,
-			"/10"
-		)
-
-
-		print(
-			"Tempo: ",
-			elapsed_time
-		)
-
-
-		print(
-			"Estrelas: 0"
-		)
-
-
-		return
-
-
-	print(
-		"Vida perdida."
-	)
-
-
-	print(
-		"Vidas restantes: ",
-		lives
-	)
-
-
-	print(
-		"Meta continua sendo: ",
-		goal_value
-	)
-
-
-# =========================================================
-# PRÓXIMA META
-# =========================================================
-
 func advance_to_next_goal() -> void:
-
-	print(
-		"META ATINGIDA!"
-	)
-
-
-	# =====================================================
-	# DÉCIMA CONTA
-	# =====================================================
 
 	if current_step >= TOTAL_STEPS:
 
 		current_value = 0
 
+		current_value_label.text = "0"
 
-		current_value_label.text = (
-			"0"
-		)
-
-
-		progress_label.text = (
-			"10/10"
-		)
-
+		progress_label.text = "10/10"
 
 		phase_completed = true
 
@@ -1448,51 +1151,33 @@ func advance_to_next_goal() -> void:
 			"FASE CONCLUÍDA!"
 		)
 
-
 		print(
 			"Tempo: ",
 			elapsed_time
 		)
-
 
 		print(
 			"Vidas restantes: ",
 			lives
 		)
 
-
 		print(
 			"Estrelas: ",
 			final_stars
 		)
 
-
 		return
 
 
-	# =====================================================
-	# PRÓXIMA CONTA
-	# =====================================================
-
 	current_step += 1
-
-
-	# -----------------------------------------------------
-	# ATUAL
-	# -----------------------------------------------------
 
 	current_value = 0
 
-
-	current_value_label.text = (
-		"0"
-	)
-
+	current_value_label.text = "0"
 
 	current_value_label.scale = (
 		Vector2.ONE
 	)
-
 
 	current_value_label.add_theme_color_override(
 		"font_color",
@@ -1500,16 +1185,8 @@ func advance_to_next_goal() -> void:
 	)
 
 
-	# -----------------------------------------------------
-	# PROGRESSO
-	# -----------------------------------------------------
-
 	update_progress_ui()
 
-
-	# -----------------------------------------------------
-	# NOVA META
-	# -----------------------------------------------------
 
 	goal_value = (
 		SUM_TARGETS[
@@ -1518,28 +1195,8 @@ func advance_to_next_goal() -> void:
 	)
 
 
-	# Não bloqueia o jogo.
-
 	animate_new_goal()
 
-
-	print(
-		"Nova conta: ",
-		current_step,
-		"/",
-		TOTAL_STEPS
-	)
-
-
-	print(
-		"Nova meta: ",
-		goal_value
-	)
-
-
-# =========================================================
-# PRIMEIRA META
-# =========================================================
 
 func animate_goal_intro() -> void:
 
@@ -1547,21 +1204,15 @@ func animate_goal_intro() -> void:
 		str(goal_value)
 	)
 
-
 	goal_value_label.pivot_offset = (
-		goal_value_label.size
-		/ 2.0
+		goal_value_label.size / 2.0
 	)
 
 
-	# Começa grande.
-
+	# A primeira meta começa maior e azul.
 	goal_value_label.scale = (
 		Vector2(1.55, 1.55)
 	)
-
-
-	# Começa azul.
 
 	goal_value_label.add_theme_color_override(
 		"font_color",
@@ -1571,16 +1222,13 @@ func animate_goal_intro() -> void:
 
 	var tween = create_tween()
 
-
 	tween.set_trans(
 		Tween.TRANS_BACK
 	)
 
-
 	tween.set_ease(
 		Tween.EASE_OUT
 	)
-
 
 	tween.tween_property(
 		goal_value_label,
@@ -1600,31 +1248,21 @@ func animate_goal_intro() -> void:
 	)
 
 
-# =========================================================
-# NOVA META
-# =========================================================
-
 func animate_new_goal() -> void:
 
 	goal_value_label.text = (
 		str(goal_value)
 	)
 
-
 	goal_value_label.pivot_offset = (
-		goal_value_label.size
-		/ 2.0
+		goal_value_label.size / 2.0
 	)
 
 
-	# Nasce grande.
-
+	# A nova meta é destacada sem bloquear o gameplay.
 	goal_value_label.scale = (
 		Vector2(1.50, 1.50)
 	)
-
-
-	# Nasce azul.
 
 	goal_value_label.add_theme_color_override(
 		"font_color",
@@ -1634,16 +1272,13 @@ func animate_new_goal() -> void:
 
 	var tween = create_tween()
 
-
 	tween.set_trans(
 		Tween.TRANS_BACK
 	)
 
-
 	tween.set_ease(
 		Tween.EASE_OUT
 	)
-
 
 	tween.tween_property(
 		goal_value_label,
@@ -1663,10 +1298,6 @@ func animate_new_goal() -> void:
 	)
 
 
-# =========================================================
-# ESTRELAS
-# =========================================================
-
 func calculate_stars() -> int:
 
 	var stars_by_time: int = 0
@@ -1676,22 +1307,20 @@ func calculate_stars() -> int:
 
 		stars_by_time = 3
 
-
 	elif elapsed_time <= STAR_2_LIMIT:
 
 		stars_by_time = 2
 
-
 	elif elapsed_time <= STAR_1_LIMIT:
 
 		stars_by_time = 1
-
 
 	else:
 
 		stars_by_time = 0
 
 
+	# O resultado final nunca pode dar mais estrelas que vidas restantes.
 	var life_limit = (
 		clampi(
 			lives,
@@ -1706,10 +1335,6 @@ func calculate_stars() -> int:
 		life_limit
 	)
 
-
-# =========================================================
-# POP DO BALÃO
-# =========================================================
 
 func pop_balloon(
 	balloon: Node2D
@@ -1733,7 +1358,6 @@ func pop_balloon(
 		balloon.global_position
 	)
 
-
 	var original_scale = (
 		balloon.scale
 	)
@@ -1748,7 +1372,6 @@ func pop_balloon(
 		original_scale * 1.15,
 		0.04
 	)
-
 
 	tween.parallel().tween_property(
 		balloon,
@@ -1769,15 +1392,10 @@ func pop_balloon(
 		operation_text
 	)
 
-
 	create_pop_sparks(
 		pop_position
 	)
 
-
-# =========================================================
-# TEXTO DO POP
-# =========================================================
 
 func create_pop_text(
 	pop_position: Vector2,
@@ -1795,18 +1413,15 @@ func create_pop_text(
 		text_value
 	)
 
-
 	pop_label.add_theme_font_size_override(
 		"font_size",
 		42
 	)
 
-
 	pop_label.add_theme_color_override(
 		"font_color",
 		Color("#D98276")
 	)
-
 
 	pop_label.horizontal_alignment = (
 		HORIZONTAL_ALIGNMENT_CENTER
@@ -1837,7 +1452,6 @@ func create_pop_text(
 		0.30
 	)
 
-
 	tween.parallel().tween_property(
 		pop_label,
 		"modulate:a",
@@ -1852,16 +1466,11 @@ func create_pop_text(
 	pop_label.queue_free()
 
 
-# =========================================================
-# PARTÍCULAS
-# =========================================================
-
 func create_pop_sparks(
 	pop_position: Vector2
 ) -> void:
 
 	var spark_count = 10
-
 	var radius = 55.0
 
 
@@ -1886,13 +1495,11 @@ func create_pop_sparks(
 				Color("#F2A900")
 			)
 
-
 		elif i % 3 == 1:
 
 			spark.color = (
 				Color("#FFD37A")
 			)
-
 
 		else:
 
@@ -1915,7 +1522,6 @@ func create_pop_sparks(
 			/ float(spark_count)
 		)
 
-
 		var direction = Vector2(
 			cos(angle),
 			sin(angle)
@@ -1927,10 +1533,7 @@ func create_pop_sparks(
 			+ direction * 15.0
 		)
 
-
-		spark.rotation = (
-			angle
-		)
+		spark.rotation = angle
 
 
 		var target_position = (
@@ -1946,11 +1549,9 @@ func create_pop_sparks(
 			Tween.TRANS_QUAD
 		)
 
-
 		spark_tween.set_ease(
 			Tween.EASE_OUT
 		)
-
 
 		spark_tween.parallel().tween_property(
 			spark,
@@ -1959,14 +1560,12 @@ func create_pop_sparks(
 			0.22
 		)
 
-
 		spark_tween.parallel().tween_property(
 			spark,
 			"rotation",
 			spark.rotation + 1.2,
 			0.22
 		)
-
 
 		spark_tween.parallel().tween_property(
 			spark,
@@ -1981,10 +1580,6 @@ func create_pop_sparks(
 				spark.queue_free()
 		)
 
-
-# =========================================================
-# LOOP DO FUNDO
-# =========================================================
 
 func reposition_backgrounds() -> void:
 
@@ -2011,10 +1606,6 @@ func reposition_backgrounds() -> void:
 			+ background_width
 		)
 
-
-# =========================================================
-# LOOP DAS NUVENS
-# =========================================================
 
 func reposition_clouds() -> void:
 

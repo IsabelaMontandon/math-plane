@@ -10,6 +10,13 @@
 [ext_resource type="PackedScene" uid="uid://b7av6vkdnbbn1" path="res://scenes/gameplay/plane.tscn" id="7_1xs2s"]
 [ext_resource type="Texture2D" uid="uid://bv6k13berjcd1" path="res://assets/images/ui/goal_frame.png" id="8_dma02"]
 [ext_resource type="Texture2D" uid="uid://ck7x5yugoep0u" path="res://assets/images/ui/heart_full.png" id="10_inxx7"]
+[ext_resource type="Texture2D" uid="uid://cymygfabd34yy" path="res://assets/images/ui/restart_button.png" id="11_inxx7"]
+[ext_resource type="Texture2D" uid="uid://choegfko1de0h" path="res://assets/images/ui/back_button.png" id="11_q3qy7"]
+[ext_resource type="Texture2D" uid="uid://bm5b250b48v5o" path="res://assets/images/ui/pause_button.png" id="13_1xs2s"]
+[ext_resource type="Texture2D" uid="uid://cokctocb2s6j8" path="res://assets/images/ui/pause_panel.png" id="14_ptbrk"]
+[ext_resource type="Texture2D" uid="uid://exuapq0xart4" path="res://assets/images/ui/pause_continue_button.png" id="15_fbatx"]
+[ext_resource type="Texture2D" uid="uid://dehs23c1klrg5" path="res://assets/images/ui/pause_restart_button.png" id="16_58y30"]
+[ext_resource type="Texture2D" uid="uid://b0j6q6vocfsus" path="res://assets/images/ui/pause_map_button.png" id="17_y7oxb"]
 
 [node name="Explorer" type="Node2D" unique_id=291905876]
 script = ExtResource("1_mwypy")
@@ -204,61 +211,103 @@ layout_mode = 2
 texture = ExtResource("10_inxx7")
 expand_mode = 1
 
-[node name="BottomControls" type="HBoxContainer" parent="." unique_id=411216335]
-visible = false
-offset_left = 1629.0
-offset_top = 451.0
-offset_right = 1669.0
-offset_bottom = 491.0
-
-[node name="MapButton" type="Button" parent="BottomControls" unique_id=2050331790]
-visible = false
-layout_mode = 2
-
-[node name="RestartButton" type="Button" parent="BottomControls" unique_id=2058968405]
-visible = false
-layout_mode = 2
-
-[node name="PauseButton" type="Button" parent="BottomControls" unique_id=1495041677]
-visible = false
-layout_mode = 2
-
-[node name="PauseOverlay" type="Control" parent="." unique_id=1336858512]
-visible = false
+[node name="PauseOverlay" type="Control" parent="UI" unique_id=1336858512]
 layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="DarkBackground" type="ColorRect" parent="PauseOverlay" unique_id=75776783]
+[node name="DarkBackground" type="ColorRect" parent="UI/PauseOverlay" unique_id=75776783]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.5019608)
+
+[node name="PausePanel" type="TextureRect" parent="UI/PauseOverlay" unique_id=1363356177]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = 450.0
+offset_top = 260.0
+offset_right = 1150.0
+offset_bottom = 640.0
+texture = ExtResource("14_ptbrk")
+expand_mode = 1
+stretch_mode = 5
 
-[node name="PausePanel" type="Panel" parent="PauseOverlay" unique_id=2046103713]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="CenterContainer" type="CenterContainer" parent="UI/PauseOverlay/PausePanel" unique_id=337224879]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 19.0
+offset_top = 2.0
+offset_right = 19.0
+offset_bottom = 2.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="PauseOverlay" unique_id=1548834391]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="PauseTitle" type="Label" parent="PauseOverlay/VBoxContainer" unique_id=1105904435]
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/PauseOverlay/PausePanel/CenterContainer" unique_id=1548834391]
 layout_mode = 2
 
-[node name="ProgressText" type="Label" parent="PauseOverlay/VBoxContainer" unique_id=1906316256]
+[node name="ButtonsContainer" type="VBoxContainer" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer" unique_id=573821325]
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 
-[node name="ProgressPercentage" type="Label" parent="PauseOverlay/VBoxContainer" unique_id=1007891672]
+[node name="ContinueButton" type="Button" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/ButtonsContainer" unique_id=2057801162]
+custom_minimum_size = Vector2(330, 62)
 layout_mode = 2
+focus_mode = 0
+icon = ExtResource("15_fbatx")
+flat = true
+expand_icon = true
 
-[node name="ContinueButton" type="Button" parent="PauseOverlay/VBoxContainer" unique_id=2057801162]
+[node name="RestartButton" type="Button" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/ButtonsContainer" unique_id=447563306]
+custom_minimum_size = Vector2(330, 62)
 layout_mode = 2
+focus_mode = 0
+icon = ExtResource("16_58y30")
+flat = true
+expand_icon = true
 
-[node name="RestartButton" type="Button" parent="PauseOverlay/VBoxContainer" unique_id=447563306]
+[node name="MapButton" type="Button" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/ButtonsContainer" unique_id=917928221]
+custom_minimum_size = Vector2(330, 62)
 layout_mode = 2
+focus_mode = 0
+icon = ExtResource("17_y7oxb")
+flat = true
+expand_icon = true
 
-[node name="MapButton" type="Button" parent="PauseOverlay/VBoxContainer" unique_id=917928221]
+[node name="BottomControls" type="HBoxContainer" parent="UI" unique_id=411216335]
+offset_left = 700.0
+offset_top = 750.0
+offset_right = 873.0
+offset_bottom = 805.0
+
+[node name="MapButton" type="Button" parent="UI/BottomControls" unique_id=2050331790]
+custom_minimum_size = Vector2(55, 55)
 layout_mode = 2
+focus_mode = 0
+icon = ExtResource("11_q3qy7")
+flat = true
+expand_icon = true
+
+[node name="RestartButton" type="Button" parent="UI/BottomControls" unique_id=2058968405]
+custom_minimum_size = Vector2(55, 55)
+layout_mode = 2
+focus_mode = 0
+icon = ExtResource("11_inxx7")
+flat = true
+expand_icon = true
+
+[node name="PauseButton" type="Button" parent="UI/BottomControls" unique_id=1495041677]
+custom_minimum_size = Vector2(55, 55)
+layout_mode = 2
+focus_mode = 0
+icon = ExtResource("13_1xs2s")
+flat = true
+expand_icon = true
