@@ -1,0 +1,428 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" uid="uid://clxabj7pfmch2" path="res://scripts/explorer.gd" id="1_mwypy"]
+[ext_resource type="Texture2D" uid="uid://c8gfbxblodhky" path="res://assets/images/ui/heart_empty.png" id="2_kq1qu"]
+[ext_resource type="Texture2D" path="res://assets/images/gameplay/autumn/background.png" id="2_sgd8h"]
+[ext_resource type="Texture2D" uid="uid://2uowp871vwfj" path="res://assets/images/gameplay/summer/cloud_1.png" id="3_kq1qu"]
+[ext_resource type="Texture2D" uid="uid://btb0atx8f26dj" path="res://assets/images/gameplay/summer/cloud_2.png" id="4_inxx7"]
+[ext_resource type="Texture2D" uid="uid://ceg1838fvejs4" path="res://assets/images/gameplay/summer/cloud_3.png" id="5_a65de"]
+[ext_resource type="Texture2D" uid="uid://d3uvowhmm3hvg" path="res://assets/images/gameplay/summer/cloud_4.png" id="6_q3qy7"]
+[ext_resource type="PackedScene" uid="uid://b7av6vkdnbbn1" path="res://scenes/gameplay/plane.tscn" id="7_1xs2s"]
+[ext_resource type="Texture2D" uid="uid://bv6k13berjcd1" path="res://assets/images/ui/goal_frame.png" id="8_dma02"]
+[ext_resource type="Texture2D" uid="uid://ck7x5yugoep0u" path="res://assets/images/ui/heart_full.png" id="10_inxx7"]
+[ext_resource type="Texture2D" uid="uid://cymygfabd34yy" path="res://assets/images/ui/restart_button.png" id="11_inxx7"]
+[ext_resource type="Texture2D" uid="uid://choegfko1de0h" path="res://assets/images/ui/back_button.png" id="11_q3qy7"]
+[ext_resource type="Texture2D" uid="uid://bm5b250b48v5o" path="res://assets/images/ui/pause_button.png" id="13_1xs2s"]
+[ext_resource type="Texture2D" uid="uid://cokctocb2s6j8" path="res://assets/images/ui/pause_panel.png" id="14_ptbrk"]
+[ext_resource type="Texture2D" uid="uid://exuapq0xart4" path="res://assets/images/ui/pause_continue_button.png" id="15_fbatx"]
+[ext_resource type="Texture2D" uid="uid://dehs23c1klrg5" path="res://assets/images/ui/pause_restart_button.png" id="16_58y30"]
+[ext_resource type="Texture2D" uid="uid://b0j6q6vocfsus" path="res://assets/images/ui/pause_map_button.png" id="17_y7oxb"]
+[ext_resource type="Texture2D" path="res://assets/images/ui/star_full.png" id="18_star_full"]
+[ext_resource type="Texture2D" path="res://assets/images/ui/star_empty.png" id="19_star_empty"]
+
+[node name="AutumnPilot" type="Node2D"]
+script = ExtResource("1_mwypy")
+heart_empty_texture = ExtResource("2_kq1qu")
+game_mode = 2
+world_key = "autumn"
+operation_type = "multiply"
+
+[node name="Background" type="Node2D" parent="." unique_id=603916466]
+
+[node name="LandscapeA" type="Sprite2D" parent="Background" unique_id=673520159]
+z_index = -10
+position = Vector2(1771, 450)
+scale = Vector2(1.499, 1.243)
+texture = ExtResource("2_sgd8h")
+
+[node name="LandscapeB" type="Sprite2D" parent="Background" unique_id=611853619]
+z_index = -10
+position = Vector2(1629, 451)
+scale = Vector2(1.499, 1.243)
+texture = ExtResource("2_sgd8h")
+flip_h = true
+
+[node name="Clouds" type="Node2D" parent="Background" unique_id=1038811559]
+z_index = -5
+
+[node name="Cloud1" type="Sprite2D" parent="Background/Clouds" unique_id=1865553854]
+position = Vector2(611, 202)
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("3_kq1qu")
+
+[node name="Cloud2" type="Sprite2D" parent="Background/Clouds" unique_id=1240023946]
+position = Vector2(1387, 425)
+scale = Vector2(0.15, 0.15)
+texture = ExtResource("4_inxx7")
+
+[node name="Cloud3" type="Sprite2D" parent="Background/Clouds" unique_id=41336345]
+position = Vector2(2130, 215.00002)
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("5_a65de")
+
+[node name="Cloud4" type="Sprite2D" parent="Background/Clouds" unique_id=165400503]
+position = Vector2(2753, 376)
+scale = Vector2(0.18, 0.18)
+texture = ExtResource("6_q3qy7")
+
+[node name="GameWorld" type="Node2D" parent="." unique_id=212290340]
+
+[node name="Plane" parent="GameWorld" unique_id=395651261 instance=ExtResource("7_1xs2s")]
+position = Vector2(300, 450)
+scale = Vector2(0.18, 0.18)
+
+[node name="BalloonRows" type="Node2D" parent="GameWorld" unique_id=664773916]
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=1150168572]
+
+[node name="ProgressPanel" type="Panel" parent="UI" unique_id=2081989975]
+offset_left = 49.0
+offset_top = 29.0
+offset_right = 219.0
+offset_bottom = 139.0
+
+[node name="ProgressBackground" type="TextureRect" parent="UI/ProgressPanel" unique_id=224183639]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -21.0
+offset_top = -16.0
+offset_right = 28.0
+offset_bottom = 24.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_dma02")
+expand_mode = 1
+
+[node name="ProgressLabel" type="Label" parent="UI/ProgressPanel" unique_id=1372859686]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 50
+text = "1/10"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CurrentPanel" type="Panel" parent="UI" unique_id=471165526]
+offset_left = 1127.0
+offset_top = 22.0
+offset_right = 1297.0
+offset_bottom = 132.0
+
+[node name="CurrentBackground" type="TextureRect" parent="UI/CurrentPanel" unique_id=1713004897]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -24.0
+offset_top = -15.0
+offset_right = 25.0
+offset_bottom = 25.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_dma02")
+expand_mode = 1
+
+[node name="CurrentTitle" type="Label" parent="UI/CurrentPanel" unique_id=1094533712]
+layout_mode = 0
+offset_left = 7.0
+offset_top = 11.0
+offset_right = 165.0
+offset_bottom = 57.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 28
+text = "ATUAL"
+horizontal_alignment = 1
+
+[node name="CurrentValue" type="Label" parent="UI/CurrentPanel" unique_id=1820012708]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 44.0
+offset_right = 166.0
+offset_bottom = 108.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 45
+text = "0"
+horizontal_alignment = 1
+
+[node name="GoalPanel" type="Panel" parent="UI" unique_id=1643666148]
+offset_left = 1368.0
+offset_top = 27.0
+offset_right = 1538.0
+offset_bottom = 137.0
+
+[node name="GoalBackground" type="TextureRect" parent="UI/GoalPanel" unique_id=316776649]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -23.0
+offset_top = -16.0
+offset_right = 26.0
+offset_bottom = 24.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_dma02")
+expand_mode = 1
+
+[node name="GoalTitle" type="Label" parent="UI/GoalPanel" unique_id=829210743]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 8.0
+offset_right = 165.0
+offset_bottom = 48.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 28
+text = "META"
+horizontal_alignment = 1
+
+[node name="GoalValue" type="Label" parent="UI/GoalPanel" unique_id=1984893409]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 34.0
+offset_right = 167.0
+offset_bottom = 107.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 45
+text = "0"
+horizontal_alignment = 1
+
+[node name="TimerPanel" type="Panel" parent="UI"]
+offset_left = 300.0
+offset_top = 27.0
+offset_right = 470.0
+offset_bottom = 137.0
+
+[node name="TimerBackground" type="TextureRect" parent="UI/TimerPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -23.0
+offset_top = -16.0
+offset_right = 26.0
+offset_bottom = 24.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_dma02")
+expand_mode = 1
+
+[node name="TimerTitle" type="Label" parent="UI/TimerPanel"]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 8.0
+offset_right = 165.0
+offset_bottom = 48.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 24
+text = "TEMPO"
+horizontal_alignment = 1
+
+[node name="TimerValue" type="Label" parent="UI/TimerPanel"]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 40.0
+offset_right = 165.0
+offset_bottom = 105.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 38
+text = "00:00"
+horizontal_alignment = 1
+
+[node name="LivesContainer" type="HBoxContainer" parent="UI" unique_id=1738729929]
+offset_left = 850.0
+offset_top = 45.0
+offset_right = 1030.0
+offset_bottom = 105.0
+
+[node name="Heart1" type="TextureRect" parent="UI/LivesContainer" unique_id=1895221436]
+custom_minimum_size = Vector2(55, 55)
+layout_mode = 2
+texture = ExtResource("10_inxx7")
+expand_mode = 1
+
+[node name="Heart2" type="TextureRect" parent="UI/LivesContainer" unique_id=757796273]
+custom_minimum_size = Vector2(55, 55)
+layout_mode = 2
+texture = ExtResource("10_inxx7")
+expand_mode = 1
+
+[node name="Heart3" type="TextureRect" parent="UI/LivesContainer" unique_id=535390879]
+custom_minimum_size = Vector2(55, 55)
+layout_mode = 2
+texture = ExtResource("10_inxx7")
+expand_mode = 1
+
+[node name="PauseOverlay" type="Control" parent="UI" unique_id=1336858512]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="DarkBackground" type="ColorRect" parent="UI/PauseOverlay" unique_id=75776783]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.5019608)
+
+[node name="PausePanel" type="TextureRect" parent="UI/PauseOverlay" unique_id=1363356177]
+layout_mode = 0
+offset_left = 540.0
+offset_top = 320.0
+offset_right = 1060.0
+offset_bottom = 580.0
+texture = ExtResource("14_ptbrk")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CenterContainer" type="CenterContainer" parent="UI/PauseOverlay/PausePanel" unique_id=337224879]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/PauseOverlay/PausePanel/CenterContainer" unique_id=1548834391]
+layout_mode = 2
+
+[node name="EndContent" type="VBoxContainer" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="EndTitle" type="Label" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/EndContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.0509804, 0.286275, 0.380392, 1)
+theme_override_font_sizes/font_size = 30
+text = "Vitória"
+horizontal_alignment = 1
+
+[node name="EndMessage" type="Label" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/EndContent"]
+custom_minimum_size = Vector2(420, 28)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.0509804, 0.286275, 0.380392, 1)
+theme_override_font_sizes/font_size = 14
+text = "Você perdeu todas as vidas."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="StarsContainer" type="HBoxContainer" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/EndContent"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="Star1" type="TextureRect" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/EndContent/StarsContainer"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+texture = ExtResource("18_star_full")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Star2" type="TextureRect" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/EndContent/StarsContainer"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+texture = ExtResource("18_star_full")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Star3" type="TextureRect" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/EndContent/StarsContainer"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+texture = ExtResource("18_star_full")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="EndTimeLabel" type="Label" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/EndContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.0509804, 0.286275, 0.380392, 1)
+theme_override_font_sizes/font_size = 17
+text = "Tempo: 00:00"
+horizontal_alignment = 1
+
+[node name="EndLivesLabel" type="Label" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/EndContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.0509804, 0.286275, 0.380392, 1)
+theme_override_font_sizes/font_size = 17
+text = "Vidas: 3"
+horizontal_alignment = 1
+
+[node name="ButtonsContainer" type="VBoxContainer" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer" unique_id=573821325]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="ContinueButton" type="TextureButton" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/ButtonsContainer" unique_id=2057801162]
+custom_minimum_size = Vector2(235, 51)
+layout_mode = 2
+size_flags_horizontal = 4
+focus_mode = 0
+texture_normal = ExtResource("15_fbatx")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="RestartButton" type="TextureButton" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/ButtonsContainer" unique_id=447563306]
+custom_minimum_size = Vector2(235, 51)
+layout_mode = 2
+size_flags_horizontal = 4
+focus_mode = 0
+texture_normal = ExtResource("16_58y30")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="MapButton" type="TextureButton" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/ButtonsContainer" unique_id=917928221]
+custom_minimum_size = Vector2(235, 51)
+layout_mode = 2
+size_flags_horizontal = 4
+focus_mode = 0
+texture_normal = ExtResource("17_y7oxb")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="BottomControls" type="HBoxContainer" parent="UI" unique_id=411216335]
+offset_left = 700.0
+offset_top = 750.0
+offset_right = 873.0
+offset_bottom = 805.0
+
+[node name="MapButton" type="Button" parent="UI/BottomControls" unique_id=2050331790]
+custom_minimum_size = Vector2(55, 55)
+layout_mode = 2
+focus_mode = 0
+icon = ExtResource("11_q3qy7")
+flat = true
+expand_icon = true
+
+[node name="RestartButton" type="Button" parent="UI/BottomControls" unique_id=2058968405]
+custom_minimum_size = Vector2(55, 55)
+layout_mode = 2
+focus_mode = 0
+icon = ExtResource("11_inxx7")
+flat = true
+expand_icon = true
+
+[node name="PauseButton" type="Button" parent="UI/BottomControls" unique_id=1495041677]
+custom_minimum_size = Vector2(55, 55)
+layout_mode = 2
+focus_mode = 0
+icon = ExtResource("13_1xs2s")
+flat = true
+expand_icon = true
