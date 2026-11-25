@@ -1,20 +1,15 @@
 extends Node2D
 
-
 @onready var operation_label = $OperationLabel
 
 var operation_value: int = 0
 var is_blank: bool = false
 
 
-func set_operation(value: int) -> void:
+func set_operation(value: int, symbol: String = "+") -> void:
 	is_blank = false
 	operation_value = value
-
-	if value >= 0:
-		operation_label.text = "+" + str(value)
-	else:
-		operation_label.text = str(value)
+	operation_label.text = symbol + str(value)
 
 
 func set_blank() -> void:

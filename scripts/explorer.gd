@@ -3,6 +3,7 @@ extends Node2D
 @export var heart_empty_texture: Texture2D
 @export_range(1, 3, 1) var game_mode: int = 1
 @export var world_key: String = "summer"
+@export var operation_type: String = "sum"
 
 @onready var landscape_a = $Background/LandscapeA
 @onready var landscape_b = $Background/LandscapeB
@@ -60,7 +61,8 @@ const CURRENT_HIGHLIGHT = Color("#2E9E5B")
 const ERROR_COLOR = Color("#E53935")
 const GOAL_COLOR = Color("#2684D9")
 
-const SUM_TARGETS = [6, 9, 12, 15, 11, 18, 14, 20, 17, 24]
+const SUM_TARGETS: Array[int] = [6, 9, 12, 15, 11, 18, 14, 20, 17, 24]
+const MULTIPLY_TARGETS: Array[int] = [6, 8, 10, 12, 15, 18, 20, 24, 30, 36]
 const TOTAL_STEPS = 10
 const MAX_LIVES = 3
 
@@ -124,8 +126,8 @@ func _ready() -> void:
 		push_warning("Defina Heart Empty Texture no nó raiz da fase.")
 
 	current_step = 1
-	current_value = 0
-	goal_value = SUM_TARGETS[0]
+	current_value = get_initial_value()
+	goal_value = get_targets()[0]
 	lives = MAX_LIVES
 	elapsed_time = 0.0
 	final_stars = 0
@@ -445,15 +447,57 @@ func move_plane_to_current_row() -> void:
 	plane_vertical_tween.tween_property(plane, "position:y", ROW_POSITIONS[current_row], move_time)
 
 
-func get_valid_sum_options() -> Array[int]:
-	var valid: Array[int] = []
-	var remaining = goal_value - current_value
+func get_targets() -> Array[int]:
+	if operation_type == "multiply":
+		return MULTIPLY_TARGETS
+	return SUM_TARGETS
 
+
+func get_initial_value() -> int:
+	return 1 if operation_type == "multiply" else 0
+
+
+func get_operation_symbol() -> String:
+	return "×" if operation_type == "multiply" else "+"
+
+
+func get_valid_options() -> Array[int]:
+	var valid: Array[int] = []
+
+	if operation_type == "multiply":
+		if current_value <= 0 or goal_value % current_value != 0:
+			return valid
+
+		var quotient: int = int(goal_value / current_value)
+		for number in range(2, 10):
+			if quotient % number == 0:
+				valid.append(number)
+		return valid
+
+	var remaining: int = goal_value - current_value
 	for number in range(1, 10):
 		if number <= remaining:
 			valid.append(number)
 
 	return valid
+
+
+func get_alternative_value(id: int, row: int) -> int:
+	if operation_type == "multiply":
+		return 2 + ((id + row) % 5)
+	return 1 + ((id * 3 + row * 2) % 9)
+
+
+func apply_operation(value: int) -> int:
+	if operation_type == "multiply":
+		return current_value * value
+	return current_value + value
+
+
+func is_bad_result(value_after: int) -> bool:
+	if operation_type == "multiply":
+		return value_after > goal_value or goal_value % value_after != 0
+	return value_after > goal_value
 
 
 func create_initial_columns() -> void:
@@ -478,7 +522,7 @@ func create_balloon_column(x_position: float, force_blank: bool = false) -> Node
 	# Cada coluna normal tem um balão vazio e uma opção garantidamente possível.
 	var empty_row = id % 4
 	var good_row = (id + 2) % 4
-	var valid = get_valid_sum_options()
+	var valid: Array[int] = get_valid_options()
 
 	for row in range(4):
 		var balloon = balloon_scene.instantiate()
@@ -489,13 +533,13 @@ func create_balloon_column(x_position: float, force_blank: bool = false) -> Node
 		if force_blank or row == empty_row:
 			balloon.set_blank()
 		elif row == good_row:
-			var value = 1
+			var value: int = 1
 			if not valid.is_empty():
 				value = valid[id % valid.size()]
-			balloon.set_operation(value)
+			balloon.set_operation(value, get_operation_symbol())
 		else:
-			var value = 1 + ((id * 3 + row * 2) % 9)
-			balloon.set_operation(value)
+			var value: int = get_alternative_value(id, row)
+			balloon.set_operation(value, get_operation_symbol())
 
 	return column
 
@@ -606,17 +650,17 @@ func resolve_selected_balloon(selected_balloon: Node2D) -> bool:
 		await pop_balloon(selected_balloon)
 		return false
 
-	var value = selected_balloon.get_operation()
-	var new_value = current_value + value
+	var value: int = selected_balloon.get_operation()
+	var new_value: int = apply_operation(value)
 
-	if new_value > goal_value:
+	if is_bad_result(new_value):
 		await pop_balloon(selected_balloon)
 		handle_wrong_operation()
 		return game_mode != 1
 
 	if new_value == goal_value:
-		current_value = 0
-		current_value_label.text = "0"
+		current_value = get_initial_value()
+		current_value_label.text = str(current_value)
 		current_value_label.scale = Vector2.ONE
 		current_value_label.add_theme_color_override("font_color", TEXT_NORMAL)
 		advance_to_next_goal()
@@ -686,9 +730,9 @@ func handle_wrong_operation() -> void:
 	var lost_heart = get_lost_heart(previous_lives)
 	lives -= 1
 
-	# O valor que passou da meta não aparece: ATUAL volta direto para zero.
-	current_value = 0
-	current_value_label.text = "0"
+	# O valor incorreto não aparece: ATUAL volta direto ao valor inicial da operação.
+	current_value = get_initial_value()
+	current_value_label.text = str(current_value)
 	current_value_label.pivot_offset = current_value_label.size / 2.0
 	current_value_label.scale = Vector2.ONE
 	current_value_label.add_theme_color_override("font_color", ERROR_COLOR)
@@ -715,8 +759,8 @@ func handle_wrong_operation() -> void:
 
 func advance_to_next_goal() -> void:
 	if current_step >= TOTAL_STEPS:
-		current_value = 0
-		current_value_label.text = "0"
+		current_value = get_initial_value()
+		current_value_label.text = str(current_value)
 		progress_label.text = "10/10"
 		phase_completed = true
 		final_stars = calculate_stars()
@@ -725,13 +769,13 @@ func advance_to_next_goal() -> void:
 		return
 
 	current_step += 1
-	current_value = 0
-	current_value_label.text = "0"
+	current_value = get_initial_value()
+	current_value_label.text = str(current_value)
 	current_value_label.scale = Vector2.ONE
 	current_value_label.add_theme_color_override("font_color", TEXT_NORMAL)
 	update_progress_ui()
 
-	goal_value = SUM_TARGETS[current_step - 1]
+	goal_value = get_targets()[current_step - 1]
 	animate_new_goal()
 
 
