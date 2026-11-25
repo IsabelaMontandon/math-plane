@@ -17,6 +17,8 @@
 [ext_resource type="Texture2D" uid="uid://exuapq0xart4" path="res://assets/images/ui/pause_continue_button.png" id="15_fbatx"]
 [ext_resource type="Texture2D" uid="uid://dehs23c1klrg5" path="res://assets/images/ui/pause_restart_button.png" id="16_58y30"]
 [ext_resource type="Texture2D" uid="uid://b0j6q6vocfsus" path="res://assets/images/ui/pause_map_button.png" id="17_y7oxb"]
+[ext_resource type="Texture2D" path="res://assets/images/ui/star_full.png" id="18_star_full"]
+[ext_resource type="Texture2D" path="res://assets/images/ui/star_empty.png" id="19_star_empty"]
 
 [node name="Explorer" type="Node2D" unique_id=291905876]
 script = ExtResource("1_mwypy")
@@ -187,6 +189,48 @@ theme_override_font_sizes/font_size = 45
 text = "0"
 horizontal_alignment = 1
 
+[node name="TimerPanel" type="Panel" parent="UI"]
+offset_left = 300.0
+offset_top = 27.0
+offset_right = 470.0
+offset_bottom = 137.0
+
+[node name="TimerBackground" type="TextureRect" parent="UI/TimerPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -23.0
+offset_top = -16.0
+offset_right = 26.0
+offset_bottom = 24.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_dma02")
+expand_mode = 1
+
+[node name="TimerTitle" type="Label" parent="UI/TimerPanel"]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 8.0
+offset_right = 165.0
+offset_bottom = 48.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 24
+text = "TEMPO"
+horizontal_alignment = 1
+
+[node name="TimerValue" type="Label" parent="UI/TimerPanel"]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 40.0
+offset_right = 165.0
+offset_bottom = 105.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 38
+text = "00:00"
+horizontal_alignment = 1
+
 [node name="LivesContainer" type="HBoxContainer" parent="UI" unique_id=1738729929]
 offset_left = 850.0
 offset_top = 45.0
@@ -230,10 +274,10 @@ color = Color(0, 0, 0, 0.5019608)
 
 [node name="PausePanel" type="TextureRect" parent="UI/PauseOverlay" unique_id=1363356177]
 layout_mode = 0
-offset_left = 450.0
-offset_top = 260.0
-offset_right = 1150.0
-offset_bottom = 640.0
+offset_left = 540.0
+offset_top = 320.0
+offset_right = 1060.0
+offset_bottom = 580.0
 texture = ExtResource("14_ptbrk")
 expand_mode = 1
 stretch_mode = 5
@@ -243,44 +287,112 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 19.0
-offset_top = 2.0
-offset_right = 19.0
-offset_bottom = 2.0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 0.0
+offset_bottom = 0.0
 grow_horizontal = 2
 grow_vertical = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="UI/PauseOverlay/PausePanel/CenterContainer" unique_id=1548834391]
 layout_mode = 2
 
+[node name="EndContent" type="VBoxContainer" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="EndTitle" type="Label" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/EndContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.0509804, 0.286275, 0.380392, 1)
+theme_override_font_sizes/font_size = 30
+text = "Vitória"
+horizontal_alignment = 1
+
+[node name="EndMessage" type="Label" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/EndContent"]
+custom_minimum_size = Vector2(420, 28)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.0509804, 0.286275, 0.380392, 1)
+theme_override_font_sizes/font_size = 14
+text = "Você perdeu todas as vidas."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="StarsContainer" type="HBoxContainer" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/EndContent"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="Star1" type="TextureRect" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/EndContent/StarsContainer"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+texture = ExtResource("18_star_full")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Star2" type="TextureRect" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/EndContent/StarsContainer"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+texture = ExtResource("18_star_full")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Star3" type="TextureRect" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/EndContent/StarsContainer"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+texture = ExtResource("18_star_full")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="EndTimeLabel" type="Label" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/EndContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.0509804, 0.286275, 0.380392, 1)
+theme_override_font_sizes/font_size = 17
+text = "Tempo: 00:00"
+horizontal_alignment = 1
+
+[node name="EndLivesLabel" type="Label" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/EndContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.0509804, 0.286275, 0.380392, 1)
+theme_override_font_sizes/font_size = 17
+text = "Vidas: 3"
+horizontal_alignment = 1
+
 [node name="ButtonsContainer" type="VBoxContainer" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer" unique_id=573821325]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
+theme_override_constants/separation = 6
+alignment = 1
 
-[node name="ContinueButton" type="Button" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/ButtonsContainer" unique_id=2057801162]
-custom_minimum_size = Vector2(330, 62)
+[node name="ContinueButton" type="TextureButton" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/ButtonsContainer" unique_id=2057801162]
+custom_minimum_size = Vector2(235, 51)
 layout_mode = 2
+size_flags_horizontal = 4
 focus_mode = 0
-icon = ExtResource("15_fbatx")
-flat = true
-expand_icon = true
+texture_normal = ExtResource("15_fbatx")
+ignore_texture_size = true
+stretch_mode = 0
 
-[node name="RestartButton" type="Button" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/ButtonsContainer" unique_id=447563306]
-custom_minimum_size = Vector2(330, 62)
+[node name="RestartButton" type="TextureButton" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/ButtonsContainer" unique_id=447563306]
+custom_minimum_size = Vector2(235, 51)
 layout_mode = 2
+size_flags_horizontal = 4
 focus_mode = 0
-icon = ExtResource("16_58y30")
-flat = true
-expand_icon = true
+texture_normal = ExtResource("16_58y30")
+ignore_texture_size = true
+stretch_mode = 0
 
-[node name="MapButton" type="Button" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/ButtonsContainer" unique_id=917928221]
-custom_minimum_size = Vector2(330, 62)
+[node name="MapButton" type="TextureButton" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/ButtonsContainer" unique_id=917928221]
+custom_minimum_size = Vector2(235, 51)
 layout_mode = 2
+size_flags_horizontal = 4
 focus_mode = 0
-icon = ExtResource("17_y7oxb")
-flat = true
-expand_icon = true
+texture_normal = ExtResource("17_y7oxb")
+ignore_texture_size = true
+stretch_mode = 0
 
 [node name="BottomControls" type="HBoxContainer" parent="UI" unique_id=411216335]
 offset_left = 700.0

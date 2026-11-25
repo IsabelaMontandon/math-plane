@@ -8,6 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://bloy2s18mwuno" path="res://assets/images/difficulty/play_button.png" id="6_yvdug"]
 [ext_resource type="Texture2D" uid="uid://bbb056sksexjf" path="res://assets/images/difficulty/pilot.png" id="7_66ti5"]
 [ext_resource type="Texture2D" uid="uid://c5wkeb2my7epl" path="res://assets/images/difficulty/commander.png" id="8_07m45"]
+[ext_resource type="Texture2D" path="res://assets/images/ui/star_empty.png" id="9_star_empty"]
 
 [node name="SummerDifficulty" type="Control" unique_id=1647804174]
 layout_mode = 3
@@ -56,6 +57,37 @@ offset_bottom = 714.0
 texture = ExtResource("5_v2524")
 expand_mode = 1
 
+
+[node name="ExplorerStars" type="HBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 285.0
+offset_top = 585.0
+offset_right = 475.0
+offset_bottom = 635.0
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="Star1" type="TextureRect" parent="ExplorerStars"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+texture = ExtResource("9_star_empty")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Star2" type="TextureRect" parent="ExplorerStars"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+texture = ExtResource("9_star_empty")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Star3" type="TextureRect" parent="ExplorerStars"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+texture = ExtResource("9_star_empty")
+expand_mode = 1
+stretch_mode = 5
+
 [node name="ExplorerPlayButton" type="TextureButton" parent="." unique_id=1393658630]
 layout_mode = 0
 offset_left = 217.0
@@ -74,6 +106,37 @@ offset_right = 991.0
 offset_bottom = 715.0
 texture = ExtResource("7_66ti5")
 expand_mode = 1
+
+
+[node name="PilotStars" type="HBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 715.0
+offset_top = 585.0
+offset_right = 905.0
+offset_bottom = 635.0
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="Star1" type="TextureRect" parent="PilotStars"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+texture = ExtResource("9_star_empty")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Star2" type="TextureRect" parent="PilotStars"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+texture = ExtResource("9_star_empty")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Star3" type="TextureRect" parent="PilotStars"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+texture = ExtResource("9_star_empty")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="PilotPlayButton" type="TextureButton" parent="." unique_id=215805219]
 layout_mode = 0
@@ -94,6 +157,37 @@ offset_bottom = 721.0
 texture = ExtResource("8_07m45")
 expand_mode = 1
 
+
+[node name="CommanderStars" type="HBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 1139.0
+offset_top = 585.0
+offset_right = 1329.0
+offset_bottom = 635.0
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="Star1" type="TextureRect" parent="CommanderStars"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+texture = ExtResource("9_star_empty")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Star2" type="TextureRect" parent="CommanderStars"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+texture = ExtResource("9_star_empty")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Star3" type="TextureRect" parent="CommanderStars"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+texture = ExtResource("9_star_empty")
+expand_mode = 1
+stretch_mode = 5
+
 [node name="CommanderPlayButton" type="TextureButton" parent="." unique_id=14787093]
 layout_mode = 0
 offset_left = 1072.0
@@ -106,3 +200,6 @@ stretch_mode = 0
 
 [connection signal="pressed" from="BackButton" to="." method="_on_back_button_pressed"]
 [connection signal="pressed" from="ExplorerPlayButton" to="." method="_on_explorer_play_button_pressed"]
+
+[connection signal="pressed" from="PilotPlayButton" to="." method="_on_pilot_play_button_pressed"]
+[connection signal="pressed" from="CommanderPlayButton" to="." method="_on_commander_play_button_pressed"]
