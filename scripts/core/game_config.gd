@@ -31,6 +31,16 @@ const SEASONS: Dictionary = {
 		"difficulty_background": "res://assets/images/difficulty/backgrounds/winter.png",
 		"difficulty_title": "res://assets/images/difficulty/title/winter.png",
 		"three_star_seconds": {"explorer": 90.0, "pilot": 120.0, "commander": 90.0}
+	},
+	"spring": {
+		"operation": "divide",
+		"symbol": "÷",
+		"initial_value": 360,
+		"targets": [180, 120, 90, 72, 60, 45, 40, 36, 30, 24],
+		"gameplay_background": "res://assets/images/gameplay/spring/background.png",
+		"difficulty_background": "res://assets/images/difficulty/backgrounds/spring.png",
+		"difficulty_title": "res://assets/images/difficulty/title/spring.png",
+		"three_star_seconds": {"explorer": 90.0, "pilot": 120.0, "commander": 90.0}
 	}
 }
 

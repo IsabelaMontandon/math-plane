@@ -20,7 +20,7 @@ var spring_locked: bool = true
 func _ready() -> void:
 	autumn_locked = not ProgressData.has_any_stars("summer")
 	winter_locked = not ProgressData.has_any_stars("autumn")
-	spring_locked = true
+	spring_locked = not ProgressData.has_any_stars("winter")
 
 	prepare_hover(summer_island)
 	prepare_hover(back_button)
@@ -34,7 +34,10 @@ func _ready() -> void:
 		prepare_locked_hover(winter_island, winter_lock)
 	else:
 		prepare_hover(winter_island)
-	prepare_locked_hover(spring_island, spring_lock)
+	if spring_locked:
+		prepare_locked_hover(spring_island, spring_lock)
+	else:
+		prepare_hover(spring_island)
 	update_locks()
 
 
@@ -104,3 +107,9 @@ func _on_winter_island_pressed() -> void:
 	if winter_locked:
 		return
 	open_difficulty("winter")
+
+
+func _on_spring_island_pressed() -> void:
+	if spring_locked:
+		return
+	open_difficulty("spring")

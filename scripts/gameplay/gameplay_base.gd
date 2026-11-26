@@ -346,6 +346,10 @@ func get_valid_options() -> Array[int]:
 		for number in range(2, 10):
 			if remainder % number == 0:
 				valid.append(number)
+	elif operation_key == "divide":
+		for number in range(2, 10):
+			if not is_bad_result(apply_operation(number)):
+				valid.append(number)
 	else:
 		var remaining: int = current_value - goal_value if operation_key == "subtract" else goal_value - current_value
 		for number in range(1, 10):
@@ -390,7 +394,7 @@ func create_balloon_column(x_position: float, force_blank: bool = false) -> Node
 			balloon.call("set_operation", good_value, operation_symbol)
 		else:
 			var other_value: int = 1 + ((id * 3 + row * 2) % 9)
-			if operation_key == "multiply":
+			if operation_key in ["multiply", "divide"]:
 				other_value = 2 + ((id + row) % 5)
 			balloon.call("set_operation", other_value, operation_symbol)
 
@@ -435,8 +439,8 @@ func move_forward() -> void:
 
 	columns.erase(first_column)
 	first_column.queue_free()
-	if operation_key == "subtract" and not phase_completed:
-		refresh_subtraction_options()
+	if operation_key in ["subtract", "divide"] and not phase_completed:
+		refresh_solution_options()
 
 	if phase_completed:
 		reposition_backgrounds()
@@ -470,8 +474,8 @@ func resolve_automatic_column(first_column: Node2D) -> void:
 	var needs_bridge: bool = await resolve_selected_balloon(selected_balloon)
 	columns.erase(first_column)
 	first_column.queue_free()
-	if operation_key == "subtract" and not phase_completed:
-		refresh_subtraction_options()
+	if operation_key in ["subtract", "divide"] and not phase_completed:
+		refresh_solution_options()
 
 	if phase_completed:
 		auto_collision_busy = false
@@ -485,7 +489,7 @@ func resolve_automatic_column(first_column: Node2D) -> void:
 	auto_collision_busy = false
 
 
-func refresh_subtraction_options() -> void:
+func refresh_solution_options() -> void:
 	var valid: Array[int] = get_valid_options()
 	if valid.is_empty():
 		return
@@ -501,6 +505,10 @@ func apply_operation(value: int) -> int:
 		return current_value - value
 	if operation_key == "multiply":
 		return current_value * value
+	if operation_key == "divide":
+		if value < 2 or current_value % value != 0:
+			return 0
+		return int(current_value / value)
 	return current_value + value
 
 
@@ -509,6 +517,8 @@ func is_bad_result(value_after: int) -> bool:
 		return value_after > goal_value or value_after <= 0 or goal_value % value_after != 0
 	if operation_key == "subtract":
 		return value_after < goal_value
+	if operation_key == "divide":
+		return value_after < goal_value or value_after % goal_value != 0
 	return value_after > goal_value
 
 

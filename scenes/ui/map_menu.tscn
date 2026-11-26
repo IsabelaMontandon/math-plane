@@ -133,3 +133,4 @@ stretch_mode = 0
 
 [connection signal="pressed" from="AutumnIsland" to="." method="_on_autumn_island_pressed"]
 [connection signal="pressed" from="WinterIsland" to="." method="_on_winter_island_pressed"]
+[connection signal="pressed" from="SpringIsland" to="." method="_on_spring_island_pressed"]
