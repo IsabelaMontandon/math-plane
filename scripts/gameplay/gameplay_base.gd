@@ -397,7 +397,6 @@ func create_balloon_column(x_position: float, force_blank: bool = false) -> Node
 			var good_value: int = 2 if operation_key == "multiply" else 1
 			if not valid.is_empty():
 				good_value = valid[id % valid.size()]
-			balloon.set_meta("solution_index", id)
 			balloon.call("set_operation", good_value, operation_symbol)
 		else:
 			var other_value: int = 1 + ((id * 3 + row * 2) % 9)
@@ -446,8 +445,6 @@ func move_forward() -> void:
 
 	columns.erase(first_column)
 	first_column.queue_free()
-	if operation_key in ["subtract", "divide"] and not phase_completed:
-		refresh_solution_options()
 
 	if phase_completed:
 		reposition_backgrounds()
@@ -481,8 +478,6 @@ func resolve_automatic_column(first_column: Node2D) -> void:
 	var needs_bridge: bool = await resolve_selected_balloon(selected_balloon)
 	columns.erase(first_column)
 	first_column.queue_free()
-	if operation_key in ["subtract", "divide"] and not phase_completed:
-		refresh_solution_options()
 
 	if phase_completed:
 		auto_collision_busy = false
@@ -494,17 +489,6 @@ func resolve_automatic_column(first_column: Node2D) -> void:
 	else:
 		refill_automatic_columns()
 	auto_collision_busy = false
-
-
-func refresh_solution_options() -> void:
-	var valid: Array[int] = get_valid_options()
-	if valid.is_empty():
-		return
-	for column in columns:
-		for balloon in column.get_children():
-			if balloon.has_meta("solution_index") and not bool(balloon.call("get_is_blank")):
-				var index: int = int(balloon.get_meta("solution_index")) % valid.size()
-				balloon.call("set_operation", valid[index], operation_symbol)
 
 
 func apply_operation(value: int) -> int:
