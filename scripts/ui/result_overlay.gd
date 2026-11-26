@@ -24,14 +24,14 @@ func _ready() -> void:
 	map_button.focus_mode = Control.FOCUS_NONE
 
 
-func show_result(reason: String, stars: int, elapsed_time: float, lives: int) -> void:
+func show_result(reason: String, stars: int, elapsed_time: float, lives: int, time_limit: float = 180.0) -> void:
 	if reason == "victory":
 		title_label.text = "Vitória"
 		message_label.text = ""
 		message_label.visible = false
 	elif reason == "time":
 		title_label.text = "Derrota"
-		message_label.text = "Você completou as contas, mas passou de 3:00 e ganhou 0 estrelas."
+		message_label.text = "Você completou as contas, mas passou de %s e ganhou 0 estrelas." % format_time(time_limit)
 		message_label.visible = true
 	else:
 		title_label.text = "Derrota"
