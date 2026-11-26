@@ -25,8 +25,8 @@ const SEASONS: Dictionary = {
 	"winter": {
 		"operation": "subtract",
 		"symbol": "−",
-		"initial_value": 30,
-		"targets": [24, 21, 19, 23, 17, 20, 15, 18, 13, 12],
+		"starts": [12, 15, 18, 20, 24, 25, 28, 30, 32, 36],
+		"targets": [0, 2, 1, 3, 0, 4, 2, 5, 1, 0],
 		"gameplay_background": "res://assets/images/gameplay/winter/background.webp",
 		"difficulty_background": "res://assets/images/difficulty/backgrounds/winter.png",
 		"difficulty_title": "res://assets/images/difficulty/title/winter.png",
@@ -35,8 +35,8 @@ const SEASONS: Dictionary = {
 	"spring": {
 		"operation": "divide",
 		"symbol": "÷",
-		"initial_value": 360,
-		"targets": [180, 120, 90, 72, 60, 45, 40, 36, 30, 24],
+		"starts": [12, 18, 24, 30, 36, 40, 48, 54, 60, 72],
+		"targets": [1, 3, 2, 5, 3, 2, 4, 3, 5, 2],
 		"gameplay_background": "res://assets/images/gameplay/spring/background.png",
 		"difficulty_background": "res://assets/images/difficulty/backgrounds/spring.png",
 		"difficulty_title": "res://assets/images/difficulty/title/spring.png",

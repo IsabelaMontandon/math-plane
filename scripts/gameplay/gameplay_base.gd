@@ -64,6 +64,7 @@ var operation_key: String = "sum"
 var operation_symbol: String = "+"
 var initial_value: int = 0
 var targets: Array[int] = []
+var starts: Array = []
 
 var heart_full_texture: Texture2D
 var current_step: int = 1
@@ -94,7 +95,7 @@ func _ready() -> void:
 		push_warning("Defina Heart Empty Texture no nó raiz da fase.")
 
 	current_step = 1
-	current_value = initial_value
+	current_value = get_round_start()
 	goal_value = targets[0]
 	lives = MAX_LIVES
 	elapsed_time = 0.0
@@ -123,6 +124,7 @@ func load_season_config() -> void:
 	operation_key = str(data.get("operation", "sum"))
 	operation_symbol = str(data.get("symbol", "+"))
 	initial_value = int(data.get("initial_value", 0))
+	starts = data.get("starts", [])
 	var limits: Dictionary = data.get("three_star_seconds", {})
 	three_star_limit = float(limits.get(get_mode_key(), STAR_3_LIMIT))
 
@@ -133,6 +135,11 @@ func load_season_config() -> void:
 
 	if targets.is_empty():
 		targets = [6, 9, 12, 15, 11, 18, 14, 20, 17, 24]
+
+
+func get_round_start() -> int:
+	var round_index: int = current_step - 1
+	return int(starts[round_index]) if round_index < starts.size() else initial_value
 
 
 func apply_gameplay_background() -> void:
@@ -387,7 +394,7 @@ func create_balloon_column(x_position: float, force_blank: bool = false) -> Node
 		if force_blank or row == empty_row:
 			balloon.call("set_blank")
 		elif row == good_row:
-			var good_value: int = 1 if operation_key == "sum" else 2
+			var good_value: int = 2 if operation_key == "multiply" else 1
 			if not valid.is_empty():
 				good_value = valid[id % valid.size()]
 			balloon.set_meta("solution_index", id)
@@ -538,10 +545,6 @@ func resolve_selected_balloon(selected_balloon: Node2D) -> bool:
 		return game_mode != 1
 
 	if new_value == goal_value:
-		current_value = initial_value
-		current_value_label.text = str(initial_value)
-		current_value_label.scale = Vector2.ONE
-		current_value_label.add_theme_color_override("font_color", TEXT_NORMAL)
 		advance_to_next_goal()
 		await pop_balloon(selected_balloon)
 		return game_mode != 1 and not phase_completed
@@ -599,8 +602,8 @@ func handle_wrong_operation() -> void:
 	var previous_lives: int = lives
 	var lost_heart: TextureRect = get_lost_heart(previous_lives)
 	lives -= 1
-	current_value = initial_value
-	current_value_label.text = str(initial_value)
+	current_value = get_round_start()
+	current_value_label.text = str(current_value)
 	current_value_label.pivot_offset = current_value_label.size / 2.0
 	current_value_label.scale = Vector2.ONE
 	current_value_label.add_theme_color_override("font_color", ERROR_COLOR)
@@ -622,8 +625,10 @@ func handle_wrong_operation() -> void:
 
 func advance_to_next_goal() -> void:
 	if current_step >= TOTAL_STEPS:
-		current_value = initial_value
-		current_value_label.text = str(initial_value)
+		current_value = goal_value if not starts.is_empty() else initial_value
+		current_value_label.text = str(current_value)
+		current_value_label.scale = Vector2.ONE
+		current_value_label.add_theme_color_override("font_color", TEXT_NORMAL)
 		progress_label.text = "10/10"
 		phase_completed = true
 		final_stars = calculate_stars()
@@ -632,8 +637,8 @@ func advance_to_next_goal() -> void:
 		return
 
 	current_step += 1
-	current_value = initial_value
-	current_value_label.text = str(initial_value)
+	current_value = get_round_start()
+	current_value_label.text = str(current_value)
 	current_value_label.scale = Vector2.ONE
 	current_value_label.add_theme_color_override("font_color", TEXT_NORMAL)
 	update_progress_ui()
