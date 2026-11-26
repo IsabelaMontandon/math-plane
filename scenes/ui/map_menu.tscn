@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://1ug2wtysrypc"]
 
-[ext_resource type="Script" uid="uid://bj67q40s5hisn" path="res://scripts/map_menu.gd" id="1_qbryl"]
+[ext_resource type="Script" path="res://scripts/ui/map_menu.gd" id="1_qbryl"]
 [ext_resource type="Texture2D" uid="uid://besue2co45khu" path="res://assets/images/map_menu/title_maps.png" id="2_qbryl"]
 [ext_resource type="Texture2D" uid="uid://cqql34yka12t3" path="res://assets/images/map_menu/background.png" id="2_y16s6"]
 [ext_resource type="Texture2D" uid="uid://ck0vqvlmmlbbj" path="res://assets/images/map_menu/summer.png" id="3_y16s6"]
@@ -129,5 +129,6 @@ ignore_texture_size = true
 stretch_mode = 0
 
 [connection signal="pressed" from="SummerIsland" to="." method="_on_summer_island_pressed"]
-[connection signal="pressed" from="AutumnIsland" to="." method="_on_autumn_island_pressed"]
 [connection signal="pressed" from="BackButton" to="." method="_on_back_button_pressed"]
+
+[connection signal="pressed" from="AutumnIsland" to="." method="_on_autumn_island_pressed"]

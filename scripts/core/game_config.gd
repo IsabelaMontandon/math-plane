@@ -1,0 +1,48 @@
+extends RefCounted
+
+static var _selected_season: String = "summer"
+static var _selected_difficulty: String = "explorer"
+
+const SEASONS: Dictionary = {
+	"summer": {
+		"operation": "sum",
+		"symbol": "+",
+		"initial_value": 0,
+		"targets": [6, 9, 12, 15, 11, 18, 14, 20, 17, 24],
+		"gameplay_background": "res://assets/images/gameplay/summer/background.png",
+		"difficulty_background": "res://assets/images/difficulty/backgrounds/summer.png",
+		"difficulty_title": "res://assets/images/difficulty/title/summer.png"
+	},
+	"autumn": {
+		"operation": "multiply",
+		"symbol": "×",
+		"initial_value": 1,
+		"targets": [6, 8, 10, 12, 15, 18, 20, 24, 30, 36],
+		"gameplay_background": "res://assets/images/gameplay/autumn/background.png",
+		"difficulty_background": "res://assets/images/difficulty/backgrounds/autumn.png",
+		"difficulty_title": "res://assets/images/difficulty/title/autumn.png"
+	}
+}
+
+static func set_season(season: String) -> void:
+	if SEASONS.has(season):
+		_selected_season = season
+
+
+static func get_selected_season() -> String:
+	return _selected_season
+
+
+static func set_difficulty(difficulty: String) -> void:
+	if difficulty in ["explorer", "pilot", "commander"]:
+		_selected_difficulty = difficulty
+
+
+static func get_selected_difficulty() -> String:
+	return _selected_difficulty
+
+
+static func get_current_season_data() -> Dictionary:
+	if SEASONS.has(_selected_season):
+		return SEASONS[_selected_season]
+	return SEASONS["summer"]

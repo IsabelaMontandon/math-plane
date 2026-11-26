@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://6g83ecnofr01"]
 
 [ext_resource type="Texture2D" uid="uid://bx7nichrtrr2j" path="res://assets/images/gameplay/summer/balloon_yellow.png" id="1_j2smu"]
-[ext_resource type="Script" uid="uid://b8mfgq563o432" path="res://scripts/balloon.gd" id="1_y2gv5"]
+[ext_resource type="Script" path="res://scripts/gameplay/balloon.gd" id="1_y2gv5"]
 
 [node name="Balloon" type="Node2D" unique_id=1292196318]
 scale = Vector2(0.7, 0.7)

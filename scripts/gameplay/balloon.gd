@@ -1,6 +1,6 @@
 extends Node2D
 
-@onready var operation_label = $OperationLabel
+@onready var operation_label: Label = $OperationLabel
 
 var operation_value: int = 0
 var is_blank: bool = false

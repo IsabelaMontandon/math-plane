@@ -9,7 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://ci1os3wkfo842" path="res://assets/images/plane/pilot_boy.png" id="8_2g8s8"]
 [ext_resource type="Texture2D" uid="uid://pwox16gdbmfy" path="res://assets/images/plane/cockpit.png" id="9_e4uio"]
 [ext_resource type="Texture2D" uid="uid://bu5b8btkg8ac5" path="res://assets/images/plane/pilot_girl.png" id="10_bqmr4"]
-[ext_resource type="Script" path="res://scripts/plane.gd" id="11_plane_script"]
+[ext_resource type="Script" path="res://scripts/gameplay/plane.gd" id="11_plane_script"]
 [ext_resource type="Texture2D" path="res://assets/images/plane/nose_red.png" id="12_nose"]
 [ext_resource type="Texture2D" path="res://assets/images/plane/propeller_hub.png" id="13_hub"]
 [ext_resource type="Texture2D" path="res://assets/images/plane/propeller_anim/frame_0.png" id="14_f0"]

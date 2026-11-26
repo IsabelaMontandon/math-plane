@@ -1,6 +1,6 @@
-[gd_scene format=3 uid="uid://c031gmokcbkih"]
+[gd_scene format=3 uid="uid://u10vt0a8p56u"]
 
-[ext_resource type="Script" uid="uid://ceyxu8srvom3" path="res://scripts/summer_difficulty.gd" id="1_u0akj"]
+[ext_resource type="Script" uid="uid://cjwp8du5pimo1" path="res://scripts/ui/difficulty.gd" id="1_u0akj"]
 [ext_resource type="Texture2D" uid="uid://ojcr41tgpgpj" path="res://assets/images/difficulty/backgrounds/summer.png" id="2_b7tes"]
 [ext_resource type="Texture2D" uid="uid://cljmtl0x3yjcw" path="res://assets/images/map_menu/back_button.png" id="3_bsc3t"]
 [ext_resource type="Texture2D" uid="uid://d1o28y3td36t4" path="res://assets/images/difficulty/title/summer.png" id="4_mw5hq"]
@@ -8,9 +8,9 @@
 [ext_resource type="Texture2D" uid="uid://bloy2s18mwuno" path="res://assets/images/difficulty/play_button.png" id="6_yvdug"]
 [ext_resource type="Texture2D" uid="uid://bbb056sksexjf" path="res://assets/images/difficulty/pilot.png" id="7_66ti5"]
 [ext_resource type="Texture2D" uid="uid://c5wkeb2my7epl" path="res://assets/images/difficulty/commander.png" id="8_07m45"]
-[ext_resource type="Texture2D" path="res://assets/images/ui/star_empty.png" id="9_star_empty"]
+[ext_resource type="Texture2D" uid="uid://cy4wv4pthfmiw" path="res://assets/images/ui/star_empty.png" id="9_star_empty"]
 
-[node name="SummerDifficulty" type="Control" unique_id=1647804174]
+[node name="Difficulty" type="Control" unique_id=1647804174]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -57,8 +57,7 @@ offset_bottom = 714.0
 texture = ExtResource("5_v2524")
 expand_mode = 1
 
-
-[node name="ExplorerStars" type="HBoxContainer" parent="."]
+[node name="ExplorerStars" type="HBoxContainer" parent="." unique_id=656086107]
 layout_mode = 0
 offset_left = 285.0
 offset_top = 585.0
@@ -67,21 +66,21 @@ offset_bottom = 635.0
 theme_override_constants/separation = 8
 alignment = 1
 
-[node name="Star1" type="TextureRect" parent="ExplorerStars"]
+[node name="Star1" type="TextureRect" parent="ExplorerStars" unique_id=1084339284]
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 texture = ExtResource("9_star_empty")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Star2" type="TextureRect" parent="ExplorerStars"]
+[node name="Star2" type="TextureRect" parent="ExplorerStars" unique_id=1859490698]
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 texture = ExtResource("9_star_empty")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Star3" type="TextureRect" parent="ExplorerStars"]
+[node name="Star3" type="TextureRect" parent="ExplorerStars" unique_id=1693829044]
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 texture = ExtResource("9_star_empty")
@@ -107,8 +106,7 @@ offset_bottom = 715.0
 texture = ExtResource("7_66ti5")
 expand_mode = 1
 
-
-[node name="PilotStars" type="HBoxContainer" parent="."]
+[node name="PilotStars" type="HBoxContainer" parent="." unique_id=1082990118]
 layout_mode = 0
 offset_left = 715.0
 offset_top = 585.0
@@ -117,21 +115,21 @@ offset_bottom = 635.0
 theme_override_constants/separation = 8
 alignment = 1
 
-[node name="Star1" type="TextureRect" parent="PilotStars"]
+[node name="Star1" type="TextureRect" parent="PilotStars" unique_id=837888346]
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 texture = ExtResource("9_star_empty")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Star2" type="TextureRect" parent="PilotStars"]
+[node name="Star2" type="TextureRect" parent="PilotStars" unique_id=717732212]
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 texture = ExtResource("9_star_empty")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Star3" type="TextureRect" parent="PilotStars"]
+[node name="Star3" type="TextureRect" parent="PilotStars" unique_id=1136192257]
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 texture = ExtResource("9_star_empty")
@@ -157,8 +155,7 @@ offset_bottom = 721.0
 texture = ExtResource("8_07m45")
 expand_mode = 1
 
-
-[node name="CommanderStars" type="HBoxContainer" parent="."]
+[node name="CommanderStars" type="HBoxContainer" parent="." unique_id=1093788946]
 layout_mode = 0
 offset_left = 1139.0
 offset_top = 585.0
@@ -167,21 +164,21 @@ offset_bottom = 635.0
 theme_override_constants/separation = 8
 alignment = 1
 
-[node name="Star1" type="TextureRect" parent="CommanderStars"]
+[node name="Star1" type="TextureRect" parent="CommanderStars" unique_id=1580797400]
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 texture = ExtResource("9_star_empty")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Star2" type="TextureRect" parent="CommanderStars"]
+[node name="Star2" type="TextureRect" parent="CommanderStars" unique_id=1158685281]
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 texture = ExtResource("9_star_empty")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Star3" type="TextureRect" parent="CommanderStars"]
+[node name="Star3" type="TextureRect" parent="CommanderStars" unique_id=966923413]
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 texture = ExtResource("9_star_empty")
@@ -200,6 +197,5 @@ stretch_mode = 0
 
 [connection signal="pressed" from="BackButton" to="." method="_on_back_button_pressed"]
 [connection signal="pressed" from="ExplorerPlayButton" to="." method="_on_explorer_play_button_pressed"]
-
 [connection signal="pressed" from="PilotPlayButton" to="." method="_on_pilot_play_button_pressed"]
 [connection signal="pressed" from="CommanderPlayButton" to="." method="_on_commander_play_button_pressed"]

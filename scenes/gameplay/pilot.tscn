@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" uid="uid://clxabj7pfmch2" path="res://scripts/explorer.gd" id="1_mwypy"]
+[ext_resource type="Script" path="res://scripts/gameplay/pilot.gd" id="1_mwypy"]
 [ext_resource type="Texture2D" uid="uid://c8gfbxblodhky" path="res://assets/images/ui/heart_empty.png" id="2_kq1qu"]
 [ext_resource type="Texture2D" uid="uid://bbyj3cdyemw5r" path="res://assets/images/gameplay/summer/background.png" id="2_sgd8h"]
 [ext_resource type="Texture2D" uid="uid://2uowp871vwfj" path="res://assets/images/gameplay/summer/cloud_1.png" id="3_kq1qu"]
@@ -20,10 +20,12 @@
 [ext_resource type="Texture2D" path="res://assets/images/ui/star_full.png" id="18_star_full"]
 [ext_resource type="Texture2D" path="res://assets/images/ui/star_empty.png" id="19_star_empty"]
 
+[ext_resource type="PackedScene" path="res://scenes/ui/pause_overlay.tscn" id="20_pause_overlay"]
+[ext_resource type="PackedScene" path="res://scenes/ui/result_overlay.tscn" id="21_result_overlay"]
+
 [node name="Pilot" type="Node2D"]
 script = ExtResource("1_mwypy")
 heart_empty_texture = ExtResource("2_kq1qu")
-game_mode = 2
 
 [node name="Background" type="Node2D" parent="." unique_id=603916466]
 
@@ -256,144 +258,9 @@ layout_mode = 2
 texture = ExtResource("10_inxx7")
 expand_mode = 1
 
-[node name="PauseOverlay" type="Control" parent="UI" unique_id=1336858512]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="PauseOverlay" parent="UI" instance=ExtResource("20_pause_overlay")]
 
-[node name="DarkBackground" type="ColorRect" parent="UI/PauseOverlay" unique_id=75776783]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0, 0, 0, 0.5019608)
-
-[node name="PausePanel" type="TextureRect" parent="UI/PauseOverlay" unique_id=1363356177]
-layout_mode = 0
-offset_left = 540.0
-offset_top = 320.0
-offset_right = 1060.0
-offset_bottom = 580.0
-texture = ExtResource("14_ptbrk")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="CenterContainer" type="CenterContainer" parent="UI/PauseOverlay/PausePanel" unique_id=337224879]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 0.0
-offset_top = 0.0
-offset_right = 0.0
-offset_bottom = 0.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/PauseOverlay/PausePanel/CenterContainer" unique_id=1548834391]
-layout_mode = 2
-
-[node name="EndContent" type="VBoxContainer" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer"]
-visible = false
-layout_mode = 2
-theme_override_constants/separation = 2
-
-[node name="EndTitle" type="Label" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/EndContent"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.0509804, 0.286275, 0.380392, 1)
-theme_override_font_sizes/font_size = 30
-text = "Vitória"
-horizontal_alignment = 1
-
-[node name="EndMessage" type="Label" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/EndContent"]
-custom_minimum_size = Vector2(420, 28)
-layout_mode = 2
-theme_override_colors/font_color = Color(0.0509804, 0.286275, 0.380392, 1)
-theme_override_font_sizes/font_size = 14
-text = "Você perdeu todas as vidas."
-horizontal_alignment = 1
-vertical_alignment = 1
-autowrap_mode = 2
-
-[node name="StarsContainer" type="HBoxContainer" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/EndContent"]
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_constants/separation = 6
-alignment = 1
-
-[node name="Star1" type="TextureRect" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/EndContent/StarsContainer"]
-custom_minimum_size = Vector2(50, 50)
-layout_mode = 2
-texture = ExtResource("18_star_full")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Star2" type="TextureRect" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/EndContent/StarsContainer"]
-custom_minimum_size = Vector2(50, 50)
-layout_mode = 2
-texture = ExtResource("18_star_full")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Star3" type="TextureRect" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/EndContent/StarsContainer"]
-custom_minimum_size = Vector2(50, 50)
-layout_mode = 2
-texture = ExtResource("18_star_full")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="EndTimeLabel" type="Label" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/EndContent"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.0509804, 0.286275, 0.380392, 1)
-theme_override_font_sizes/font_size = 17
-text = "Tempo: 00:00"
-horizontal_alignment = 1
-
-[node name="EndLivesLabel" type="Label" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/EndContent"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.0509804, 0.286275, 0.380392, 1)
-theme_override_font_sizes/font_size = 17
-text = "Vidas: 3"
-horizontal_alignment = 1
-
-[node name="ButtonsContainer" type="VBoxContainer" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer" unique_id=573821325]
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-theme_override_constants/separation = 6
-alignment = 1
-
-[node name="ContinueButton" type="TextureButton" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/ButtonsContainer" unique_id=2057801162]
-custom_minimum_size = Vector2(235, 51)
-layout_mode = 2
-size_flags_horizontal = 4
-focus_mode = 0
-texture_normal = ExtResource("15_fbatx")
-ignore_texture_size = true
-stretch_mode = 0
-
-[node name="RestartButton" type="TextureButton" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/ButtonsContainer" unique_id=447563306]
-custom_minimum_size = Vector2(235, 51)
-layout_mode = 2
-size_flags_horizontal = 4
-focus_mode = 0
-texture_normal = ExtResource("16_58y30")
-ignore_texture_size = true
-stretch_mode = 0
-
-[node name="MapButton" type="TextureButton" parent="UI/PauseOverlay/PausePanel/CenterContainer/VBoxContainer/ButtonsContainer" unique_id=917928221]
-custom_minimum_size = Vector2(235, 51)
-layout_mode = 2
-size_flags_horizontal = 4
-focus_mode = 0
-texture_normal = ExtResource("17_y7oxb")
-ignore_texture_size = true
-stretch_mode = 0
+[node name="ResultOverlay" parent="UI" instance=ExtResource("21_result_overlay")]
 
 [node name="BottomControls" type="HBoxContainer" parent="UI" unique_id=411216335]
 offset_left = 700.0

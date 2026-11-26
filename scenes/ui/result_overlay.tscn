@@ -1,0 +1,138 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/result_overlay.gd" id="1_result"]
+[ext_resource type="Texture2D" path="res://assets/images/ui/end_panel.png" id="2_panel"]
+[ext_resource type="Texture2D" path="res://assets/images/ui/star_full.png" id="3_star"]
+[ext_resource type="Texture2D" path="res://assets/images/ui/pause_restart_button.png" id="4_restart"]
+[ext_resource type="Texture2D" path="res://assets/images/ui/pause_map_button.png" id="5_map"]
+
+[node name="ResultOverlay" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+z_index = 100
+script = ExtResource("1_result")
+
+[node name="DarkBackground" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.501961)
+
+[node name="ResultPanel" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 485.0
+offset_top = 240.0
+offset_right = 1115.0
+offset_bottom = 660.0
+texture = ExtResource("2_panel")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CenterContainer" type="CenterContainer" parent="ResultPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 45.0
+offset_top = 38.0
+offset_right = -45.0
+offset_bottom = -38.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ResultPanel/CenterContainer"]
+layout_mode = 2
+theme_override_constants/separation = 5
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="ResultPanel/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(500, 42)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.05098, 0.28627, 0.38039, 1)
+theme_override_font_sizes/font_size = 32
+text = "Vitória"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MessageLabel" type="Label" parent="ResultPanel/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(500, 34)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.05098, 0.28627, 0.38039, 1)
+theme_override_font_sizes/font_size = 15
+text = ""
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="StarsContainer" type="HBoxContainer" parent="ResultPanel/CenterContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="Star1" type="TextureRect" parent="ResultPanel/CenterContainer/VBoxContainer/StarsContainer"]
+custom_minimum_size = Vector2(52, 52)
+layout_mode = 2
+texture = ExtResource("3_star")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Star2" type="TextureRect" parent="ResultPanel/CenterContainer/VBoxContainer/StarsContainer"]
+custom_minimum_size = Vector2(52, 52)
+layout_mode = 2
+texture = ExtResource("3_star")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Star3" type="TextureRect" parent="ResultPanel/CenterContainer/VBoxContainer/StarsContainer"]
+custom_minimum_size = Vector2(52, 52)
+layout_mode = 2
+texture = ExtResource("3_star")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TimeLabel" type="Label" parent="ResultPanel/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.05098, 0.28627, 0.38039, 1)
+theme_override_font_sizes/font_size = 18
+text = "Tempo: 00:00"
+horizontal_alignment = 1
+
+[node name="LivesLabel" type="Label" parent="ResultPanel/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.05098, 0.28627, 0.38039, 1)
+theme_override_font_sizes/font_size = 18
+text = "Vidas: 3"
+horizontal_alignment = 1
+
+[node name="ButtonsContainer" type="VBoxContainer" parent="ResultPanel/CenterContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="RestartButton" type="TextureButton" parent="ResultPanel/CenterContainer/VBoxContainer/ButtonsContainer"]
+custom_minimum_size = Vector2(235, 51)
+layout_mode = 2
+size_flags_horizontal = 4
+texture_normal = ExtResource("4_restart")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="MapButton" type="TextureButton" parent="ResultPanel/CenterContainer/VBoxContainer/ButtonsContainer"]
+custom_minimum_size = Vector2(235, 51)
+layout_mode = 2
+size_flags_horizontal = 4
+texture_normal = ExtResource("5_map")
+ignore_texture_size = true
+stretch_mode = 5
+
+[connection signal="pressed" from="ResultPanel/CenterContainer/VBoxContainer/ButtonsContainer/RestartButton" to="." method="_on_restart_button_pressed"]
+[connection signal="pressed" from="ResultPanel/CenterContainer/VBoxContainer/ButtonsContainer/MapButton" to="." method="_on_map_button_pressed"]
