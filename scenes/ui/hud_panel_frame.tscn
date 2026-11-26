@@ -1,0 +1,17 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/images/ui/pause_panel.png" id="1_pause_panel"]
+
+[node name="HUDPanelFrame" type="NinePatchRect"]
+offset_left = -18.0
+offset_top = -8.0
+offset_right = 1356.0
+offset_bottom = 832.0
+scale = Vector2(0.15, 0.15)
+mouse_filter = 2
+texture = ExtResource("1_pause_panel")
+region_rect = Rect2(120, 56, 1536, 796)
+patch_margin_left = 181
+patch_margin_top = 166
+patch_margin_right = 181
+patch_margin_bottom = 176

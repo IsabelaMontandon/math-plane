@@ -8,7 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://ceg1838fvejs4" path="res://assets/images/gameplay/summer/cloud_3.png" id="5_a65de"]
 [ext_resource type="Texture2D" uid="uid://d3uvowhmm3hvg" path="res://assets/images/gameplay/summer/cloud_4.png" id="6_q3qy7"]
 [ext_resource type="PackedScene" uid="uid://b7av6vkdnbbn1" path="res://scenes/gameplay/plane.tscn" id="7_1xs2s"]
-[ext_resource type="Texture2D" uid="uid://bv6k13berjcd1" path="res://assets/images/ui/goal_frame.png" id="8_dma02"]
+[ext_resource type="PackedScene" path="res://scenes/ui/hud_panel_frame.tscn" id="8_hud_frame"]
 [ext_resource type="Texture2D" uid="uid://ck7x5yugoep0u" path="res://assets/images/ui/heart_full.png" id="10_inxx7"]
 [ext_resource type="Texture2D" uid="uid://cymygfabd34yy" path="res://assets/images/ui/restart_button.png" id="11_inxx7"]
 [ext_resource type="Texture2D" uid="uid://choegfko1de0h" path="res://assets/images/ui/back_button.png" id="11_q3qy7"]
@@ -75,25 +75,14 @@ scale = Vector2(0.18, 0.18)
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=1150168572]
 
-[node name="ProgressPanel" type="Panel" parent="UI" unique_id=2081989975]
+[node name="ProgressPanel" type="Control" parent="UI" unique_id=2081989975]
 offset_left = 49.0
-offset_top = 29.0
+offset_top = 27.0
 offset_right = 219.0
-offset_bottom = 139.0
+offset_bottom = 137.0
+mouse_filter = 2
 
-[node name="ProgressBackground" type="TextureRect" parent="UI/ProgressPanel" unique_id=224183639]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -21.0
-offset_top = -16.0
-offset_right = 28.0
-offset_bottom = 24.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = ExtResource("8_dma02")
-expand_mode = 1
+[node name="ProgressBackground" parent="UI/ProgressPanel" unique_id=224183639 instance=ExtResource("8_hud_frame")]
 
 [node name="ProgressLabel" type="Label" parent="UI/ProgressPanel" unique_id=1372859686]
 layout_mode = 1
@@ -108,32 +97,21 @@ text = "1/10"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="CurrentPanel" type="Panel" parent="UI" unique_id=471165526]
+[node name="CurrentPanel" type="Control" parent="UI" unique_id=471165526]
 offset_left = 1127.0
-offset_top = 22.0
+offset_top = 27.0
 offset_right = 1297.0
-offset_bottom = 132.0
+offset_bottom = 137.0
+mouse_filter = 2
 
-[node name="CurrentBackground" type="TextureRect" parent="UI/CurrentPanel" unique_id=1713004897]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -24.0
-offset_top = -15.0
-offset_right = 25.0
-offset_bottom = 25.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = ExtResource("8_dma02")
-expand_mode = 1
+[node name="CurrentBackground" parent="UI/CurrentPanel" unique_id=1713004897 instance=ExtResource("8_hud_frame")]
 
 [node name="CurrentTitle" type="Label" parent="UI/CurrentPanel" unique_id=1094533712]
 layout_mode = 0
-offset_left = 7.0
-offset_top = 11.0
-offset_right = 165.0
-offset_bottom = 57.0
+offset_top = 7.0
+offset_right = 170.0
+offset_bottom = 45.0
+mouse_filter = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 28
 text = "ATUAL"
@@ -141,41 +119,30 @@ horizontal_alignment = 1
 
 [node name="CurrentValue" type="Label" parent="UI/CurrentPanel" unique_id=1820012708]
 layout_mode = 0
-offset_left = 4.0
-offset_top = 44.0
-offset_right = 166.0
-offset_bottom = 108.0
+offset_top = 42.0
+offset_right = 170.0
+offset_bottom = 107.0
+mouse_filter = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 45
 text = "0"
 horizontal_alignment = 1
 
-[node name="GoalPanel" type="Panel" parent="UI" unique_id=1643666148]
+[node name="GoalPanel" type="Control" parent="UI" unique_id=1643666148]
 offset_left = 1368.0
 offset_top = 27.0
 offset_right = 1538.0
 offset_bottom = 137.0
+mouse_filter = 2
 
-[node name="GoalBackground" type="TextureRect" parent="UI/GoalPanel" unique_id=316776649]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -23.0
-offset_top = -16.0
-offset_right = 26.0
-offset_bottom = 24.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = ExtResource("8_dma02")
-expand_mode = 1
+[node name="GoalBackground" parent="UI/GoalPanel" unique_id=316776649 instance=ExtResource("8_hud_frame")]
 
 [node name="GoalTitle" type="Label" parent="UI/GoalPanel" unique_id=829210743]
 layout_mode = 0
-offset_left = 6.0
-offset_top = 8.0
-offset_right = 165.0
-offset_bottom = 48.0
+offset_top = 7.0
+offset_right = 170.0
+offset_bottom = 45.0
+mouse_filter = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 28
 text = "META"
@@ -183,54 +150,43 @@ horizontal_alignment = 1
 
 [node name="GoalValue" type="Label" parent="UI/GoalPanel" unique_id=1984893409]
 layout_mode = 0
-offset_left = 8.0
-offset_top = 34.0
-offset_right = 167.0
+offset_top = 42.0
+offset_right = 170.0
 offset_bottom = 107.0
+mouse_filter = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 45
 text = "0"
 horizontal_alignment = 1
 
-[node name="TimerPanel" type="Panel" parent="UI"]
+[node name="TimerPanel" type="Control" parent="UI"]
 offset_left = 300.0
 offset_top = 27.0
 offset_right = 470.0
 offset_bottom = 137.0
+mouse_filter = 2
 
-[node name="TimerBackground" type="TextureRect" parent="UI/TimerPanel"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -23.0
-offset_top = -16.0
-offset_right = 26.0
-offset_bottom = 24.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = ExtResource("8_dma02")
-expand_mode = 1
+[node name="TimerBackground" parent="UI/TimerPanel" instance=ExtResource("8_hud_frame")]
 
 [node name="TimerTitle" type="Label" parent="UI/TimerPanel"]
 layout_mode = 0
-offset_left = 5.0
-offset_top = 8.0
-offset_right = 165.0
-offset_bottom = 48.0
+offset_top = 7.0
+offset_right = 170.0
+offset_bottom = 45.0
+mouse_filter = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 28
 text = "TEMPO"
 horizontal_alignment = 1
 
 [node name="TimerValue" type="Label" parent="UI/TimerPanel"]
 layout_mode = 0
-offset_left = 5.0
-offset_top = 40.0
-offset_right = 165.0
-offset_bottom = 105.0
+offset_top = 42.0
+offset_right = 170.0
+offset_bottom = 107.0
+mouse_filter = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 38
+theme_override_font_sizes/font_size = 45
 text = "00:00"
 horizontal_alignment = 1
 
