@@ -18,9 +18,14 @@ var spring_locked: bool = true
 
 
 func _ready() -> void:
-	autumn_locked = not ProgressData.has_any_stars("summer")
-	winter_locked = not ProgressData.has_any_stars("autumn")
-	spring_locked = not ProgressData.has_any_stars("winter")
+	var summer_best: int = update_island_stars(summer_island, "summer")
+	var autumn_best: int = update_island_stars(autumn_island, "autumn")
+	var winter_best: int = update_island_stars(winter_island, "winter")
+	update_island_stars(spring_island, "spring")
+
+	autumn_locked = summer_best == 0
+	winter_locked = autumn_best == 0
+	spring_locked = winter_best == 0
 
 	prepare_hover(summer_island)
 	prepare_hover(back_button)
@@ -39,6 +44,13 @@ func _ready() -> void:
 	else:
 		prepare_hover(spring_island)
 	update_locks()
+
+
+func update_island_stars(island: TextureButton, season: String) -> int:
+	var best: int = ProgressData.get_world_best(season)
+	for star in island.get_node("BestStars").get_children():
+		star.visible = star.get_index() < best
+	return best
 
 
 func prepare_hover(button: TextureButton) -> void:

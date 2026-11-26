@@ -10,6 +10,8 @@
 [ext_resource type="Texture2D" uid="uid://x8f4woeulp44" path="res://assets/images/map_menu/lock.png" id="6_y16s6"]
 [ext_resource type="Texture2D" uid="uid://cljmtl0x3yjcw" path="res://assets/images/map_menu/back_button.png" id="7_84ith"]
 
+[ext_resource type="Texture2D" path="res://assets/images/ui/star_full.png" id="8_star_full"]
+
 [node name="MapMenu" type="Control" unique_id=1808945184]
 layout_mode = 3
 anchors_preset = 15
@@ -52,6 +54,46 @@ texture_normal = ExtResource("3_y16s6")
 ignore_texture_size = true
 stretch_mode = 0
 
+[node name="BestStars" type="Control" parent="SummerIsland"]
+layout_mode = 0
+mouse_filter = 2
+
+[node name="Star1" type="TextureRect" parent="SummerIsland/BestStars"]
+visible = false
+layout_mode = 0
+offset_left = 178.0
+offset_top = 427.0
+offset_right = 212.0
+offset_bottom = 461.0
+mouse_filter = 2
+texture = ExtResource("8_star_full")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Star2" type="TextureRect" parent="SummerIsland/BestStars"]
+visible = false
+layout_mode = 0
+offset_left = 216.0
+offset_top = 427.0
+offset_right = 250.0
+offset_bottom = 461.0
+mouse_filter = 2
+texture = ExtResource("8_star_full")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Star3" type="TextureRect" parent="SummerIsland/BestStars"]
+visible = false
+layout_mode = 0
+offset_left = 254.0
+offset_top = 427.0
+offset_right = 288.0
+offset_bottom = 461.0
+mouse_filter = 2
+texture = ExtResource("8_star_full")
+expand_mode = 1
+stretch_mode = 5
+
 [node name="AutumnIsland" type="TextureButton" parent="." unique_id=2139510122]
 custom_minimum_size = Vector2(100, 100)
 layout_mode = 0
@@ -71,6 +113,46 @@ offset_right = 263.0
 offset_bottom = 246.0
 mouse_filter = 2
 texture = ExtResource("6_y16s6")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="BestStars" type="Control" parent="AutumnIsland"]
+layout_mode = 0
+mouse_filter = 2
+
+[node name="Star1" type="TextureRect" parent="AutumnIsland/BestStars"]
+visible = false
+layout_mode = 0
+offset_left = 121.0
+offset_top = 415.0
+offset_right = 157.0
+offset_bottom = 451.0
+mouse_filter = 2
+texture = ExtResource("8_star_full")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Star2" type="TextureRect" parent="AutumnIsland/BestStars"]
+visible = false
+layout_mode = 0
+offset_left = 161.0
+offset_top = 415.0
+offset_right = 197.0
+offset_bottom = 451.0
+mouse_filter = 2
+texture = ExtResource("8_star_full")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Star3" type="TextureRect" parent="AutumnIsland/BestStars"]
+visible = false
+layout_mode = 0
+offset_left = 201.0
+offset_top = 415.0
+offset_right = 237.0
+offset_bottom = 451.0
+mouse_filter = 2
+texture = ExtResource("8_star_full")
 expand_mode = 1
 stretch_mode = 5
 
@@ -96,6 +178,46 @@ texture = ExtResource("6_y16s6")
 expand_mode = 1
 stretch_mode = 5
 
+[node name="BestStars" type="Control" parent="WinterIsland"]
+layout_mode = 0
+mouse_filter = 2
+
+[node name="Star1" type="TextureRect" parent="WinterIsland/BestStars"]
+visible = false
+layout_mode = 0
+offset_left = 133.0
+offset_top = 401.0
+offset_right = 171.0
+offset_bottom = 439.0
+mouse_filter = 2
+texture = ExtResource("8_star_full")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Star2" type="TextureRect" parent="WinterIsland/BestStars"]
+visible = false
+layout_mode = 0
+offset_left = 175.0
+offset_top = 401.0
+offset_right = 213.0
+offset_bottom = 439.0
+mouse_filter = 2
+texture = ExtResource("8_star_full")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Star3" type="TextureRect" parent="WinterIsland/BestStars"]
+visible = false
+layout_mode = 0
+offset_left = 217.0
+offset_top = 401.0
+offset_right = 255.0
+offset_bottom = 439.0
+mouse_filter = 2
+texture = ExtResource("8_star_full")
+expand_mode = 1
+stretch_mode = 5
+
 [node name="SpringIsland" type="TextureButton" parent="." unique_id=875806044]
 custom_minimum_size = Vector2(100, 100)
 layout_mode = 0
@@ -115,6 +237,46 @@ offset_right = 286.0
 offset_bottom = 267.0
 mouse_filter = 2
 texture = ExtResource("6_y16s6")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="BestStars" type="Control" parent="SpringIsland"]
+layout_mode = 0
+mouse_filter = 2
+
+[node name="Star1" type="TextureRect" parent="SpringIsland/BestStars"]
+visible = false
+layout_mode = 0
+offset_left = 130.0
+offset_top = 431.0
+offset_right = 168.0
+offset_bottom = 469.0
+mouse_filter = 2
+texture = ExtResource("8_star_full")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Star2" type="TextureRect" parent="SpringIsland/BestStars"]
+visible = false
+layout_mode = 0
+offset_left = 173.0
+offset_top = 431.0
+offset_right = 211.0
+offset_bottom = 469.0
+mouse_filter = 2
+texture = ExtResource("8_star_full")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Star3" type="TextureRect" parent="SpringIsland/BestStars"]
+visible = false
+layout_mode = 0
+offset_left = 215.0
+offset_top = 431.0
+offset_right = 253.0
+offset_bottom = 469.0
+mouse_filter = 2
+texture = ExtResource("8_star_full")
 expand_mode = 1
 stretch_mode = 5
 
