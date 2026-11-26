@@ -21,6 +21,16 @@ const SEASONS: Dictionary = {
 		"gameplay_background": "res://assets/images/gameplay/autumn/background.png",
 		"difficulty_background": "res://assets/images/difficulty/backgrounds/autumn.png",
 		"difficulty_title": "res://assets/images/difficulty/title/autumn.png"
+	},
+	"winter": {
+		"operation": "subtract",
+		"symbol": "−",
+		"initial_value": 30,
+		"targets": [24, 21, 19, 23, 17, 20, 15, 18, 13, 12],
+		"gameplay_background": "res://assets/images/gameplay/winter/background.webp",
+		"difficulty_background": "res://assets/images/difficulty/backgrounds/winter.png",
+		"difficulty_title": "res://assets/images/difficulty/title/winter.png",
+		"three_star_seconds": {"explorer": 90.0, "pilot": 120.0, "commander": 90.0}
 	}
 }
 
