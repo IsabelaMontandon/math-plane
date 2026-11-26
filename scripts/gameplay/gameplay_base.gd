@@ -39,8 +39,7 @@ const GOAL_COLOR: Color = Color("#2684D9")
 const TOTAL_STEPS: int = 10
 const MAX_LIVES: int = 3
 const STAR_3_LIMIT: float = 120.0
-const STAR_2_LIMIT: float = 150.0
-const STAR_1_LIMIT: float = 180.0
+const STAR_TIME_INTERVAL: float = 30.0
 
 const BACKGROUND_MOVE_DISTANCE: float = 220.0
 const CLOUD_MOVE_DISTANCE: float = 70.0
@@ -73,6 +72,7 @@ var goal_value: int = 0
 var current_row: int = 2
 var lives: int = MAX_LIVES
 var elapsed_time: float = 0.0
+var three_star_limit: float = STAR_3_LIMIT
 var final_stars: int = 0
 var phase_completed: bool = false
 var end_reason: String = ""
@@ -123,6 +123,8 @@ func load_season_config() -> void:
 	operation_key = str(data.get("operation", "sum"))
 	operation_symbol = str(data.get("symbol", "+"))
 	initial_value = int(data.get("initial_value", 0))
+	var limits: Dictionary = data.get("three_star_seconds", {})
+	three_star_limit = float(limits.get(get_mode_key(), STAR_3_LIMIT))
 
 	targets.clear()
 	var raw_targets: Array = data.get("targets", [])
@@ -179,7 +181,7 @@ func close_pause_menu() -> void:
 
 
 func open_end_menu() -> void:
-	result_overlay.call("show_result", end_reason, final_stars, elapsed_time, lives)
+	result_overlay.call("show_result", end_reason, final_stars, elapsed_time, lives, three_star_limit + 2.0 * STAR_TIME_INTERVAL)
 	get_tree().paused = true
 
 
@@ -345,7 +347,7 @@ func get_valid_options() -> Array[int]:
 			if remainder % number == 0:
 				valid.append(number)
 	else:
-		var remaining: int = goal_value - current_value
+		var remaining: int = current_value - goal_value if operation_key == "subtract" else goal_value - current_value
 		for number in range(1, 10):
 			if number <= remaining:
 				valid.append(number)
@@ -384,6 +386,7 @@ func create_balloon_column(x_position: float, force_blank: bool = false) -> Node
 			var good_value: int = 1 if operation_key == "sum" else 2
 			if not valid.is_empty():
 				good_value = valid[id % valid.size()]
+			balloon.set_meta("solution_index", id)
 			balloon.call("set_operation", good_value, operation_symbol)
 		else:
 			var other_value: int = 1 + ((id * 3 + row * 2) % 9)
@@ -432,6 +435,8 @@ func move_forward() -> void:
 
 	columns.erase(first_column)
 	first_column.queue_free()
+	if operation_key == "subtract" and not phase_completed:
+		refresh_subtraction_options()
 
 	if phase_completed:
 		reposition_backgrounds()
@@ -465,6 +470,8 @@ func resolve_automatic_column(first_column: Node2D) -> void:
 	var needs_bridge: bool = await resolve_selected_balloon(selected_balloon)
 	columns.erase(first_column)
 	first_column.queue_free()
+	if operation_key == "subtract" and not phase_completed:
+		refresh_subtraction_options()
 
 	if phase_completed:
 		auto_collision_busy = false
@@ -478,7 +485,20 @@ func resolve_automatic_column(first_column: Node2D) -> void:
 	auto_collision_busy = false
 
 
+func refresh_subtraction_options() -> void:
+	var valid: Array[int] = get_valid_options()
+	if valid.is_empty():
+		return
+	for column in columns:
+		for balloon in column.get_children():
+			if balloon.has_meta("solution_index") and not bool(balloon.call("get_is_blank")):
+				var index: int = int(balloon.get_meta("solution_index")) % valid.size()
+				balloon.call("set_operation", valid[index], operation_symbol)
+
+
 func apply_operation(value: int) -> int:
+	if operation_key == "subtract":
+		return current_value - value
 	if operation_key == "multiply":
 		return current_value * value
 	return current_value + value
@@ -487,6 +507,8 @@ func apply_operation(value: int) -> int:
 func is_bad_result(value_after: int) -> bool:
 	if operation_key == "multiply":
 		return value_after > goal_value or value_after <= 0 or goal_value % value_after != 0
+	if operation_key == "subtract":
+		return value_after < goal_value
 	return value_after > goal_value
 
 
@@ -635,11 +657,11 @@ func animate_new_goal() -> void:
 
 func calculate_stars() -> int:
 	var stars_by_time: int = 0
-	if elapsed_time <= STAR_3_LIMIT:
+	if elapsed_time <= three_star_limit:
 		stars_by_time = 3
-	elif elapsed_time <= STAR_2_LIMIT:
+	elif elapsed_time <= three_star_limit + STAR_TIME_INTERVAL:
 		stars_by_time = 2
-	elif elapsed_time <= STAR_1_LIMIT:
+	elif elapsed_time <= three_star_limit + 2.0 * STAR_TIME_INTERVAL:
 		stars_by_time = 1
 	return mini(stars_by_time, clampi(lives, 0, 3))
 
